@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Licencia;
 
 use App\Models\Trasportista\UserTrasportista;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

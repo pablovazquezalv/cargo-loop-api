@@ -1,10 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Trasportista;
 
 use App\Http\Controllers\Controller;
 use App\Models\Trasportista\UserTrasportista;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UserTransportistaController extends Controller
 {
@@ -20,9 +21,10 @@ class UserTransportistaController extends Controller
     /**
      * Crear un nuevo transportista.
      */
-    public function store(Request $request)
+    public function Create_USER(Request $request)
     {
-        $validated = $request->validate([
+        
+          $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
             'nss' => 'required|string|max:255',
@@ -35,9 +37,20 @@ class UserTransportistaController extends Controller
             'email' => 'required|email|max:255',
             'tipo_licencia_id' => 'required|exists:tipo_de_licencia,id',
         ]);
-
-        $transportista = UserTrasportista::create($validated);
-        return response()->json(['message' => 'Transportista creado exitosamente.', 'data' => $transportista], 201);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        $validated = $validator->validated();
+        $transportista = new UserTrasportista($validated);
+        if ($transportista->save()) {
+            return response()->json(['message' => 'Transportista creado exitosamente.', 'data' => $transportista], 201);
+        } else {
+            return response()->json(['message' => 'Error al crear el transportista.'], 500);
+        }
+       
     }
 
     /**

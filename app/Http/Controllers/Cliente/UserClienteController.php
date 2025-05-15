@@ -109,8 +109,6 @@ class UserClienteController extends Controller
         $cliente->rfc = $request->rfc;
         $cliente->no_patronal = $request->no_patronal;
         $cliente->Clave_Interbencaria_de_la_empresa = $request->Clave_Interbencaria_de_la_empresa;
-
-
         $cliente->Comprabante_Fiscal = $request->Comprabante_Fiscal;
         $cliente->Representante_legal = $request->Representante_legal;
         $cliente->Foto_identificacion = $request->Foto_identificacion;
@@ -126,6 +124,7 @@ class UserClienteController extends Controller
         return response()->json(['message' => 'Cliente creado exitosamente.', 'data' => $cliente], 201);
 
     }
+
     public function show($id)
     {
         $cliente = ClienteModel::find($id);

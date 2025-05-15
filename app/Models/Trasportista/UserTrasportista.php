@@ -6,7 +6,7 @@ use App\Models\EmpresaTrasportistaModel\EmpresaTransportista;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Licencia\TipoDeLicencia;
 use App\Models\Otp\LoginOtpModel;
-use App\Models\TipoDeLicencia as ModelsTipoDeLicencia;
+use App\Models\Licencia\TipoDeLicencia as ModelsTipoDeLicencia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserTrasportista extends Model
