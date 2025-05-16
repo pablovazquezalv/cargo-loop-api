@@ -24,8 +24,9 @@ return new class extends Migration
             $table->string('Foto_identificacion');
             $table->string('Nombre_Del_Contacto_de_la_empresa');
             $table->string('Telefono');
-            $table->Integer('code',4)->nullable();
-            $table->string('Email');
+            $table->integer('code')->nullable()->unique(); // Remove auto_increment
+
+             $table->string('Email');
             $table->string('Puesto');
             $table->string('Comprobante_de_domicilio');
             $table->unsignedTinyInteger('attempts');
