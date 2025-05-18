@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Trasportista\UserTransportistaController  ;
 use App\Http\Controllers\Cliente\UserClienteController;
+use App\Http\Controllers\Manager\ManagerController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -24,7 +25,9 @@ Route::prefix('clientes')->group(function () {
     Route::delete('/{id}', [UserClienteController::class, 'destroy']); // Eliminar cliente
 });
 
-Route::post('/login', [UserClienteController::class, 'login']);
+
+//MANAGER
+Route::post('/loginWithMail', [ManagerController::class, 'loginWithMail']);
 Route::post('/verify-code', [UserClienteController::class, 'verifyCode']);
 
 

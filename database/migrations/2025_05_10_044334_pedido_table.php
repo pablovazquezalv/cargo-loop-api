@@ -14,7 +14,6 @@ return new class extends Migration
     {
          Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_cliente_id'); // Relación con el cliente que realiza el pedido
             $table->date('fecha_carga'); // Fecha de carga
             $table->string('lugar_origen'); // Lugar de origen
             $table->string('lugar_destino'); // Lugar de destino
@@ -33,7 +32,6 @@ return new class extends Migration
             $table->timestamps();
 
             // Relación con la tabla user_cliente
-            $table->foreign('user_cliente_id')->references('id')->on('user_cliente');
         });
 
           Schema::create('pedido_transportista', function (Blueprint $table) {
@@ -46,7 +44,6 @@ return new class extends Migration
 
             // Relación con la tabla pedidos
             $table->foreign('pedido_id')->references('id')->on('pedidos');
-            $table->foreign('transportista_id')->references('id')->on('user_transportista');
         });
           Schema::create('comprobante_pedido', function (Blueprint $table) {
             $table->id();
@@ -58,7 +55,6 @@ return new class extends Migration
             $table->timestamps();
 
             // Relación con la tabla pedido_transportista
-            $table->foreign('pedido_transportista_id')->references('id')->on('pedido_transportista');
         });
 
         Schema::create('liberacion_pedidos', function (Blueprint $table) {
@@ -74,7 +70,6 @@ return new class extends Migration
 
             // Relación con la tabla pedidos
             $table->foreign('pedido_id')->references('id')->on('pedidos');
-            $table->foreign('transportista_id')->references('id')->on('user_transportista');
         });
 
     }

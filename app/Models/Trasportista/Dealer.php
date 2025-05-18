@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Trasportista;
+namespace App\Models\Dealer;
 
 use App\Models\EmpresaTrasportistaModel\EmpresaTransportista;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use App\Models\Otp\LoginOtpModel;
 use App\Models\Licencia\TipoDeLicencia as ModelsTipoDeLicencia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class UserTrasportista extends Model
+class Dealer extends Model
 {
      use HasFactory;
      protected $table = 'user_transportista';

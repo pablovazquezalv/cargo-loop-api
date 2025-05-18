@@ -15,8 +15,37 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('profile_picture')->nullable();
+
+            $table->unsignedBigInteger('rol_id');
+            $table->foreign('rol_id')->references('id')->on('roles')->onDelete('cascade');
+
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            
+
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+           
+            //Campos repartidor
+            $table->string('nss')->nullable();
+            $table->string('picture_license')->nullable();
+            $table->string('proof_of_residence')->nullable();
+            $table->string('photo_identification')->nullable();
+            $table->string('rfc')->nullable();
+            $table->string('letter_of_no_criminal_record')->nullable();
+            //tipo de licencia
+            $table->string('type_license')->nullable();
+
+           
+           
             $table->rememberToken();
             $table->timestamps();
         });

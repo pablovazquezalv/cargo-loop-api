@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Cliente;
+namespace App\Models\Client;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ClienteModel extends Model
+class ClientModel extends Model
 {
     //
      protected $table = 'user_cliente';
