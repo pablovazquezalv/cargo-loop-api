@@ -5,6 +5,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Dealer\Dealer;
 use Illuminate\Http\Request;
 use App\Models\Invitation\Invitation;
+use App\Mail\InvitationMail;
+use App\Models\Otp\LoginOtpModel;
+use App\Models\Manager\Manager;
+use App\Models\Company\Company;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +37,44 @@ class DealerController extends Controller
             ], 422);
         }
 
+    }
+
+    //login with phone
+    public function loginWithPhone(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string|max:10',
+            'password' => 'required|string|min:8'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Dealer::where('phone', $request->phone)->first();
+       
+        if($user && Hash::check($request->password, $user->password)) {
+            // Generar un token de acceso
+            $token = $user->createToken('token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso.',
+                'data' => $user,
+                'token' => $token
+            ], 200);
+
+
+        }
+        else {
+            return response()->json([
+                'message' => 'Credenciales incorrectas.'
+            ], 401);
+        }
+
+        // Lógica para autenticar al transportista usando el número de teléfono y la contraseña
     }
 
     //unirse a una empresa por un id y codigo

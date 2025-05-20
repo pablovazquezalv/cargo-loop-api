@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Invitation\Invitation;
 use App\Mail\InvitationMail;
 use App\Models\Manager\Manager;
+use App\Models\Otp\LoginOtpModel;
+use App\Models\Client\ClientModel;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User\User;
 use Illuminate\Support\Facades\Mail;
@@ -15,6 +17,35 @@ use Illuminate\Support\Facades\Validator;
 
 class ManagerController extends Controller
 {
+    public function register(Request $request){
+        $validator = Validator::make($request->all(), [
+              'name' => 'required|string|max:255',
+              'email' => 'required|string|email|max:255|unique:users',
+              'password' => 'required|string|min:8|confirmed',
+              'phone' => 'required|string|max:10'
+  
+          ]);
+          if ($validator->fails()) {
+              return response()->json([
+                  'message' => 'Errores de validación.',
+                  'errors' => $validator->errors()
+              ], 422);
+          }
+           
+          $cliente = new ClientModel();
+          $cliente->name = $request->name;
+          $cliente->email = $request->email;
+          $cliente->rol_id = 2; // Asignar el rol de cliente
+          $cliente->password = Hash::make($request->password);
+          $cliente->phone = $request->phone;
+  
+          if (!$cliente->save()) {
+              return response()->json(['message' => 'Error al crear el cliente.'], 500);
+          }
+          return response()->json(['message' => 'Cliente creado exitosamente.', 'data' => $cliente], 201);
+  
+      }
+  
     
     public function createCompany(Request $request)
     {
