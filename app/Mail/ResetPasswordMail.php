@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -15,10 +16,12 @@ class ResetPasswordMail extends Mailable
 
     /**
      * Create a new message instance.
+     * 
      */
-    public function __construct()
+    public $user;
+    public function __construct($user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -27,7 +30,7 @@ class ResetPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reset Password Mail',
+            subject: 'Restablecer contraseña',
         );
     }
 
@@ -37,7 +40,10 @@ class ResetPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'ResetPasswordMail',
+            with: [
+                'user' => $this->user,
+            ],
         );
     }
 

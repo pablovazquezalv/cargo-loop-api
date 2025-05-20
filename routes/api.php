@@ -40,7 +40,13 @@ Route::prefix('manager')->group(function () {
     Route::get('/{id}', [ManagerController::class, 'show']); // Mostrar un manager específico
     Route::put('/{id}', [ManagerController::class, 'update']); // Actualizar un manager
     Route::delete('/{id}', [ManagerController::class, 'destroy']); // Eliminar un manager
+    //forgetPassword
+    Route::post('/forgetPassword', [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña
+
+
 });
+
+
 
 
 

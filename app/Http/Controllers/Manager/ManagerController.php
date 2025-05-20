@@ -175,18 +175,25 @@ class ManagerController extends Controller
         }
 
         // Generar un nuevo token de restablecimiento de contraseña
-        $codigo= Random::generate(4, '0-9');
+        $code= Random::generate(4, '0-9');
         $user = Manager::find($user->id);
-        $user->codigo = $codigo;
+        $user->code = $code;
         $user->save();
 
 
 
 
         // Enviar el token por correo electrónico
-        Mail::to($user->email)->send(new ResetPasswordMail($user));
+        try {
+            Mail::to($user->email)->send(new ResetPasswordMail($user));
+        } catch (\Exception $e) {
 
-        return response()->json(['message' => 'Token de restablecimiento de contraseña enviado.']);
+            return response()->json(['message' => 'Error al enviar el correo electrónico.',
+        'error' => $e->getMessage()], 500);
+        
+        }
+      
+       
     }
     public function resetPassword(Request $request)
     {
