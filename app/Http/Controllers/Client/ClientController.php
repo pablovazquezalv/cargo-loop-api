@@ -62,10 +62,10 @@ class ClientController extends Controller
             return response()->json(['message' => 'Número de teléfono no encontrado.'], 404);
         }
 
-        // Generar un código de 4 dígitos
+        
         $code = rand(1000, 9999);
 
-        // Encriptar y guardar el código en la base de datos
+        
         $cliente->code = Hash::make($code);
         $cliente->save();
 

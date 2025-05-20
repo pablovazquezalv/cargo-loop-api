@@ -18,6 +18,12 @@ Route::prefix('dealer')->group(function () {
     Route::get('/{id}', [DealerController::class, 'show']); // Mostrar un transportista específico
     Route::put('/{id}', [DealerController::class, 'update']); // Actualizar un transportista
     Route::delete('/{id}', [DealerController::class, 'destroy']); // Eliminar un transportista
+    Route::post('/register/step1', [DealerController::class, 'registerPrimerPaso']);
+    Route::post('/register/step2', [DealerController::class, 'registerSegundoPaso']);
+    Route::post('/register/step3', [DealerController::class, 'registerTercerPaso']);
+    Route::post('/loginWithPhone', [DealerController::class, 'loginWithPhone']);
+    Route::post('/verifyCode', [DealerController::class, 'verifyCode']);
+    Route::post('/joinCompany', [DealerController::class, 'joinCompany']);
 });
 Route::prefix('client')->group(function () {
     Route::get('/', [ClientController::class, 'index']); // Listar clientes
