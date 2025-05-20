@@ -24,6 +24,7 @@ class Manager extends Authenticatable
         'city',
         'state',
         'country',
+        'code',
         'postal_code',
         'profile_picture',
         'website',
