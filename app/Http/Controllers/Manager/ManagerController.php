@@ -12,8 +12,10 @@ use App\Models\Otp\LoginOtpModel;
 use App\Models\Client\ClientModel;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User\User;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Nette\Utils\Random;
 
 class ManagerController extends Controller
 {
@@ -151,6 +153,69 @@ class ManagerController extends Controller
         } else {
             return response()->json(['message' => 'Credenciales incorrectas.'], 401);
         }
+    }
+
+    public function forgetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = Manager::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+        }
+
+        // Generar un nuevo token de restablecimiento de contraseña
+        $codigo= Random::generate(4, '0-9');
+        $user = Manager::find($user->id);
+        $user->codigo = $codigo;
+        $user->save();
+
+
+
+
+        // Enviar el token por correo electrónico
+        Mail::to($user->email)->send(new ResetPasswordMail($user));
+
+        return response()->json(['message' => 'Token de restablecimiento de contraseña enviado.']);
+    }
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $otp = LoginOtpModel::where('token', $request->token)->first();
+
+        if (!$otp) {
+            return response()->json(['message' => 'Token inválido.'], 400);
+        }
+
+        $user = Manager::find($otp->user_id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Eliminar el token después de usarlo
+        $otp->delete();
+
+        return response()->json(['message' => 'Contraseña restablecida con éxito.']);
     }
 
       

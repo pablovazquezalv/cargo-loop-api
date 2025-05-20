@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('postal_code')->nullable();
             $table->string('profile_picture')->nullable();
 
+            $table->string('code')->nullable();
+
             $table->unsignedBigInteger('rol_id');
             $table->foreign('rol_id')->references('id')->on('roles')->onDelete('cascade');
 

@@ -28,6 +28,7 @@ Route::prefix('client')->group(function () {
 });
 Route::prefix('manager')->group(function () {
     Route::get('/', [ManagerController::class, 'index']); // Listar todos los managers
+    Route::post('/loginWithMail', [ManagerController::class, 'loginWithMail']); // Iniciar sesión con correo electrónico
     Route::post("/register", [ManagerController::class, "register"]);
     Route::post('/loginWithPhone', [ManagerController::class, 'loginWithPhone']); // Iniciar sesión con teléfono
     Route::get('/{id}', [ManagerController::class, 'show']); // Mostrar un manager específico
