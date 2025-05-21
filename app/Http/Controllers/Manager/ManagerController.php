@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User\User;
 use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Nette\Utils\Random;
 
@@ -181,11 +182,14 @@ class ManagerController extends Controller
         $user->save();
 
 
+        $url = URL::temporarySignedRoute(
+            'reset.password', now()->addMinutes(30), ['email' => $user->email, 'code' => $code]
+        );
 
 
         // Enviar el token por correo electrónico
         try {
-            Mail::to($user->email)->send(new ResetPasswordMail($user));
+            Mail::to($user->email)->send(new ResetPasswordMail($user, $url));
         } catch (\Exception $e) {
 
             return response()->json(['message' => 'Error al enviar el correo electrónico.',
@@ -195,35 +199,17 @@ class ManagerController extends Controller
       
        
     }
-    public function resetPassword(Request $request)
+    //mandar vista para verificar el codigo 
+    public function verifyCode(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'token' => 'required|string|max:255',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Errores de validación.',
-                'errors' => $validator->errors()
-            ], 422);
+       $user = Manager::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado.'], 404);
         }
 
-        $otp = LoginOtpModel::where('token', $request->token)->first();
-
-        if (!$otp) {
-            return response()->json(['message' => 'Token inválido.'], 400);
-        }
-
-        $user = Manager::find($otp->user_id);
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Eliminar el token después de usarlo
-        $otp->delete();
-
-        return response()->json(['message' => 'Contraseña restablecida con éxito.']);
+        return view('reset_password', ['user' => $user]);
     }
+    //mandar vista de intr
 
       
 }
