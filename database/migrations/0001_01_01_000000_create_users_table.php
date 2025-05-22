@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('profile_picture')->nullable();
+            $table->integer('status')->default(0); // 0: Inactivo, 1: Activo
 
             $table->string('code')->nullable();
 

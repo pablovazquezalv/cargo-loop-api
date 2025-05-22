@@ -16,6 +16,8 @@ use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use App\Mail\CodeVerificationMail;
 use Nette\Utils\Random;
 
 class ManagerController extends Controller
@@ -38,17 +40,49 @@ class ManagerController extends Controller
           $cliente = new ClientModel();
           $cliente->name = $request->name;
           $cliente->email = $request->email;
-          $cliente->rol_id = 2; // Asignar el rol de cliente
+          $cliente->rol_id = 3; // Asignar el rol de manager
           $cliente->password = Hash::make($request->password);
           $cliente->phone = $request->phone;
+
+          #mandar correo de verificacion
+        $code = Random::generate(4, '0-9');
+        $cliente->code = $code;
+        $cliente->save();
+
+        try {
+            Mail::to($cliente->email)->send(new CodeVerificationMail($cliente));
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al enviar el correo electrónico.',
+        'error' => $e->getMessage()], 500);
+        }
+
+
   
           if (!$cliente->save()) {
               return response()->json(['message' => 'Error al crear el cliente.'], 500);
           }
           return response()->json(['message' => 'Cliente creado exitosamente.', 'data' => $cliente], 201);
   
-      }
+    }
   
+    public function activeAccount(Request $request)
+    {
+        $user = Manager::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+        }
+
+        if ($user->code !== $request->code) {
+            return response()->json(['message' => 'Código incorrecto.'], 422);
+        }
+
+        // Actualizar el estado del usuario a activo
+        $user->status = 1; // Cambiar el estado a activo
+        $user->code = null; // Limpiar el código después de la verificación
+        $user->save();
+
+        return response()->json(['message' => 'Cuenta activada exitosamente.'], 200);
+    }
     
     public function createCompany(Request $request)
     {
@@ -183,7 +217,7 @@ class ManagerController extends Controller
 
 
         $url = URL::temporarySignedRoute(
-            'reset.password', now()->addMinutes(30), ['email' => $user->email, 'code' => $code]
+            'reset.password.view', now()->addMinutes(30), ['email' => $user->email, 'code' => $code]
         );
 
 
@@ -200,16 +234,57 @@ class ManagerController extends Controller
        
     }
     //mandar vista para verificar el codigo 
-    public function verifyCode(Request $request)
+    public function verifyCodeView(Request $request)
     {
        $user = Manager::where('email', $request->email)->first();
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado.'], 404);
         }
 
-        return view('reset_password', ['user' => $user]);
+        return view('codeView', ['user' => $user]);
     }
-    //mandar vista de intr
 
+
+    public function resetPassword(Request $request,$id)
+    {
+        $user = Manager::find($id);
+
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+        }
+
+        $codeArray = $request->input('code');
+        $fullCode = implode('', $codeArray); // "7906"
+
+
+
+        if ($user->code !== $fullCode) {
+            return response()->json(['message' => 'Código incorrecto.'], 422);
+        }
+
+        // Actualizar la contraseña
+        $user->password = Hash::make($request->password);
+        $user->code = null; // Limpiar el código después de restablecer la contraseña
+        $user->save();
+
+        return response()->json(['message' => 'Contraseña restablecida exitosamente.'], 200);
+    }
+
+    //funcion para ver si tiene company_id
+    public function hasCompanyId($id)
+    {
+        $user = Manager::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+        }
+
+        if ($user->company_id) {
+            return response()->json(['message' => 'El usuario tiene company_id.'], 200);
+        } else {
+            return response()->json(['message' => 'El usuario no tiene company_id.'], 200);
+        }
+    }
       
 }

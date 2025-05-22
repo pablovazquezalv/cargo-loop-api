@@ -18,10 +18,13 @@ class ResetPasswordMail extends Mailable
      * Create a new message instance.
      * 
      */
-    public $user;
-    public function __construct($user)
+    public $user,$url;
+
+
+    public function __construct($user, $url)
     {
         $this->user = $user;
+        $this->url = $url;
     }
 
     /**
@@ -43,6 +46,7 @@ class ResetPasswordMail extends Mailable
             view: 'ResetPasswordMail',
             with: [
                 'user' => $this->user,
+                'url' => $this->url,
             ],
         );
     }

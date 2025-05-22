@@ -16,9 +16,10 @@ class CodeVerificationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public $user;
+    public function __construct($user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -37,7 +38,10 @@ class CodeVerificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'CodeVerificationMail',
+            with: [
+                'user' => $this->user,
+            ],
         );
     }
 

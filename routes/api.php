@@ -36,14 +36,13 @@ Route::prefix('manager')->group(function () {
     Route::get('/', [ManagerController::class, 'index']); // Listar todos los managers
     Route::post('/loginWithMail', [ManagerController::class, 'loginWithMail']); // Iniciar sesión con correo electrónico
     Route::post("/register", [ManagerController::class, "register"]);
+    Route::post('/activeAccount', [ManagerController::class, 'activeAccount']); // Activar cuenta
     Route::post('/loginWithPhone', [ManagerController::class, 'loginWithPhone']); // Iniciar sesión con teléfono
-    Route::get('/{id}', [ManagerController::class, 'show']); // Mostrar un manager específico
-    Route::put('/{id}', [ManagerController::class, 'update']); // Actualizar un manager
     Route::delete('/{id}', [ManagerController::class, 'destroy']); // Eliminar un manager
     //forgetPassword
     Route::post('/forgetPassword', [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña
-
-
+    Route::get('/resetPassword', [ManagerController::class, 'verifyCodeView'])->name('reset.password.view'); // Restablecer contraseña
+    Route::post('/resetPassword/{id}', [ManagerController::class, 'resetPassword'])->name('reset.password'); // Restablecer contraseña
 });
 
 
