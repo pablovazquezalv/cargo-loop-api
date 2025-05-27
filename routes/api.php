@@ -36,9 +36,16 @@ Route::prefix('manager')->group(function () {
     Route::get('/', [ManagerController::class, 'index']); // Listar todos los managers
     Route::post('/loginWithMail', [ManagerController::class, 'loginWithMail']); // Iniciar sesión con correo electrónico
     Route::post("/register", [ManagerController::class, "register"]);
+    Route::post('/createCompany', [ManagerController::class, 'createCompany'])->middleware('auth:sanctum'); // Crear una empresa
     Route::post('/activeAccount', [ManagerController::class, 'activeAccount']); // Activar cuenta
+    //Verificar token
+    Route::post('/verifyToken', [ManagerController::class, 'verifyToken'])->name('manager.verify.token')->middleware('auth:sanctum'); // Verificar token
     Route::post('/loginWithPhone', [ManagerController::class, 'loginWithPhone']); // Iniciar sesión con teléfono
     Route::delete('/{id}', [ManagerController::class, 'destroy']); // Eliminar un manager
+  
+    //invitations
+    Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum'); // Enviar invitación
+  
     //forgetPassword
     Route::post('/forgetPassword', [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña
     Route::get('/resetPassword', [ManagerController::class, 'verifyCodeView'])->name('reset.password.view'); // Restablecer contraseña

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('code')->unique();
             $table->enum('status', ['pending', 'accepted', 'declined'])->default('pending');
             $table->timestamp('accepted_at')->nullable();
