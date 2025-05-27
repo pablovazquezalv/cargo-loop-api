@@ -33,6 +33,28 @@
             @endfor
         </div>
 
+        <!--CONTRASEÑA-->
+        <div class="mb-6">
+            <label for="password" class="block text-gray-700 mb-2">Nueva Contraseña</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                class="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
+            />
+        </div>
+        <div class="mb-6">
+            <label for="password_confirmation" class="block text-gray-700 mb-2">Confirmar Contraseña</label>
+            <input
+                type="password"
+                id="password_confirmation"
+                name="password_confirmation"
+                required
+                class="w-full max-w-xs px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
+            />
+        </div>
+
         <p class="text-gray-700 mb-6">
             ¿No te llegó ningún correo? 
             <span class="text-blue-800 cursor-pointer hover:underline" onclick="reenviarCodigo()">Reenviar</span>

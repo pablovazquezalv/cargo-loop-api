@@ -87,14 +87,18 @@ class ManagerController extends Controller
     public function createCompany(Request $request)
     {
 
-        //obtener el id de usuario que hara creara la empresa
-        $userId = $request->input('user_id');
+        
+        
+        $user = $request->user();
+
+       $userId = $user->id;
+
 
         //Validar los datos de la empresa
         $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'business_name' => 'nullable|string|max:255',
-        'email' => 'required|string|email|max:255|unique:company,email',
+        'email' => 'required|string|email|max:255|unique:companies,email',
         'phone' => 'nullable|string|max:15',
         'address' => 'nullable|string|max:255',
         'city' => 'nullable|string|max:255',
@@ -107,6 +111,7 @@ class ManagerController extends Controller
 
         ]);
 
+
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Errores de validación.',
@@ -115,20 +120,32 @@ class ManagerController extends Controller
         }
         //Crear la empresa
         $company = new Company();
-        $company->name = $request->input('name');
-        $company->business_name = $request->input('business_name');
-        $company->email = $request->input('email');
-        $company->phone = $request->input('phone');
-        $company->address = $request->input('address');
-        $company->city = $request->input('city');
-        $company->state = $request->input('state');
-        $company->country = $request->input('country');
-        $company->postal_code = $request->input('postal_code');
-        $company->profile_picture = $request->input('profile_picture');
-        $company->website = $request->input('website');
-        $company->description = $request->input('description');
-        $company->user_id = $userId; // Asignar el ID del usuario que creó la empresa
+        $company->name = $request->name;
+        $company->business_name = $request->business_name;
+        $company->email = $request->email;
+        $company->phone = $request->phone;
+        $company->address = $request->address;
+        $company->city = $request->city;
+        $company->state = $request->state;
+        $company->country = $request->country;
+        $company->postal_code = $request->postal_code;
+        $company->profile_picture = $request->profile_picture;
+        $company->website = $request->website;
+        $company->description = $request->description;
+     
+        if ($request->hasFile('profile_picture')) {
+            $imagePath = $request->file('profile_picture')->store('companies', 'public');
+            $company->profile_picture = $imagePath;
+        }
         $company->save();
+
+        // Asignar la empresa al usuario
+        $user = Manager::find($userId);
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+        }
+        $user->company_id = $company->id;
+        $user->save();
 
         return response()->json([
             'message' => 'Empresa creada exitosamente.',
@@ -145,20 +162,37 @@ class ManagerController extends Controller
             'email' => 'required|string|email|max:255',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $manager = $request->user();
 
         $code = Invitation::generateCode();
 
         $invitation = Invitation::create([
             'company_id' => $manager->company_id,
-            'manager_id' => $manager->id,
+            'user_id' => $manager->id,
             'email' => $request->email,
             'code' => $code,
         ]);
 
-        Mail::to($request->email)->send(new InvitationMail($invitation));
+        try{
+            Mail::to($request->email)->send(new InvitationMail($invitation));
+            return response()->json([
+                'message' => 'Invitación enviada exitosamente.',
+                'data' => $invitation
+            ], 201);
+        } catch (\Exception $e) {
 
-        return response()->json(['message' => 'Invitación enviada con éxito.']);
+            return response()->json(['message' => 'Error al enviar la invitación por correo electrónico.',
+            'error' => $e->getMessage()], 500);
+        }
+
+        
     }
 
     //iniciar sesion con el correo y contraseña
@@ -224,6 +258,8 @@ class ManagerController extends Controller
         // Enviar el token por correo electrónico
         try {
             Mail::to($user->email)->send(new ResetPasswordMail($user, $url));
+
+            return response()->json(['message' => 'Correo electrónico de restablecimiento de contraseña enviado exitosamente.'], 200);
         } catch (\Exception $e) {
 
             return response()->json(['message' => 'Error al enviar el correo electrónico.',
@@ -243,7 +279,6 @@ class ManagerController extends Controller
 
         return view('codeView', ['user' => $user]);
     }
-
 
     public function resetPassword(Request $request,$id)
     {
@@ -271,6 +306,24 @@ class ManagerController extends Controller
         return response()->json(['message' => 'Contraseña restablecida exitosamente.'], 200);
     }
 
+    public function verifyToken(Request $request)
+    {
+        $user = $request->user();
+        
+        if($user)
+        {
+            return response()->json([
+                'message' => 'Token válido',
+                'id' => $user->id,
+                'role' => $user->role,
+                'status' => $user->status,
+                'company_id' => $user->company_id,
+            ], 200);
+        }
+        return response()->json(['message' => 'Token inválido'], 401);
+    }
+
+
     //funcion para ver si tiene company_id
     public function hasCompanyId($id)
     {
@@ -286,5 +339,7 @@ class ManagerController extends Controller
             return response()->json(['message' => 'El usuario no tiene company_id.'], 200);
         }
     }
+
+
       
 }

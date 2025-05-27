@@ -11,7 +11,7 @@ use GuzzleHttp\Client;
 class Invitation extends Model
 {
     //
-    protected $fillable = ['company_id', 'manager_id', 'email', 'code', 'accepted_at'];
+    protected $fillable = ['company_id', 'manager_id', 'email', 'code', 'accepted_at','user_id', 'status'];
 
     public static function generateCode()
     {

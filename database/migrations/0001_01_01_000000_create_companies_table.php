@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->string('website')->nullable();
             $table->string('description')->nullable();
+            
         
             $table->timestamps();
         });
