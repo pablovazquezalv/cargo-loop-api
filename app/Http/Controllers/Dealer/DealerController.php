@@ -2,19 +2,18 @@
 namespace App\Http\Controllers\Dealer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Dealer\Dealer;
+
+
 use Illuminate\Http\Request;
 use App\Models\Invitation\Invitation;
-use App\Mail\InvitationMail;
-use App\Models\Otp\LoginOtpModel;
-use App\Models\Manager\Manager;
-use App\Models\Company\Company;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\CodeVerificationMail;
 use Illuminate\Support\Facades\Mail;
-
+use App\Models\Trasportista\Dealer;
+use Illuminate\Support\Facades\DB;
 
 class DealerController extends Controller
 {
@@ -29,7 +28,7 @@ class DealerController extends Controller
           $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
             'phone' => 'required|string|max:10'
         ]);
        
@@ -40,17 +39,22 @@ class DealerController extends Controller
             ], 422);
         }
         else{ 
-            $user = Dealer::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'phone' => $request->phone,
-                'rol_id' => 3, // Asignar el rol de transportista
-            ]);
+            // Usar DB para insertar directamente en la tabla users
+            $user = new Dealer();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->phone = $request->phone;
+            $user->rol_id = 3; // Asignar rol de transportista por defecto
+            if($user->save()){ // <-- ¡Aquí está la corrección!
+                return response()->json([
+                    'message' => 'Usuario creado exitosamente.',
+                    'data' => $user,
+                ], 201);
+            } 
             return response()->json([
-                'message' => 'Usuario creado exitosamente.',
-                'data' => $user->only(['id', 'name', 'email', 'phone'])
-            ], 201);
+                'message' => 'Error al crear el usuario.'
+            ], 500);
         }
 
     }
@@ -62,20 +66,18 @@ class DealerController extends Controller
                 'message' => 'Usuario no encontrado.'
             ], 404);
         }
-        
-        
-          $validator = Validator::make($request->all(), [
+
+        $validator = Validator::make($request->all(), [
             'address' => 'required|string|max:255',
             'nss' => 'required',
-            'picture_license' => 'required',
-            'proof_of_residence' => 'required',
-            'photo_identification' => 'required',
+            'picture_license' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'proof_of_residence' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'photo_identification' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'rfc' => 'required',
-            'letter_of_no_criminal_record' => 'required',
-            'tipo_de_licencia_id' => 'required|exists:tipo_de_licencia,id',
-            
+            'letter_of_no_criminal_record' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'tipo_de_licencia_id' => 'required',
         ]);
-         if ($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'message' => 'Errores de validación.',
                 'errors' => $validator->errors()
@@ -83,13 +85,32 @@ class DealerController extends Controller
         }
 
         $user->address = $request->address;
-        $user->nss = $request->nss; 
-        $user->picture_license = $request->picture_license;
-        $user->proof_of_residence = $request->proof_of_residence;
-        $user->photo_identification = $request->photo_identification;
+        $user->nss = $request->nss;
+    
+        // Guardar archivos en public y almacenar la ruta
+        if ($request->hasFile('picture_license')) {
+            $file = $request->file('picture_license');
+            $filename = 'user_' . $user->id . '_licencia.' . $file->getClientOriginalExtension();
+            $user->picture_license = $file->storeAs('licencias', $filename, 'public');
+        }
+        if ($request->hasFile('photo_identification')) {
+            $file = $request->file('photo_identification');
+            $filename = 'user_' . $user->id . '_identificacion.' . $file->getClientOriginalExtension();
+            $user->photo_identification = $file->storeAs('identificaciones', $filename, 'public');
+        }
+        if ($request->hasFile('letter_of_no_criminal_record')) {
+            $file = $request->file('letter_of_no_criminal_record');
+            $filename = 'user_' . $user->id . '_no_criminal.' . $file->getClientOriginalExtension();
+            $user->letter_of_no_criminal_record = $file->storeAs('no_criminal', $filename, 'public');
+        }
+        if ($request->hasFile('proof_of_residence')) {
+            $file = $request->file('proof_of_residence');
+            $filename = 'user_' . $user->id . '_comprobante.' . $file->getClientOriginalExtension();
+            $user->proof_of_residence = $file->storeAs('proof_of_residence', $filename, 'public');
+        }
+    
         $user->rfc = $request->rfc;
-        $user->letter_of_no_criminal_record = $request->letter_of_no_criminal_record;
-        $user->tipo_de_licencia_id = $request->tipo_de_licencia_id;
+        $user->type_license = $request->tipo_de_licencia_id;
         $user->save();
         if ($user) {
             return response()->json([
@@ -157,35 +178,33 @@ class DealerController extends Controller
         }
 
         $cliente = Dealer::where('phone', $request->phone)->first();
+        
         if (!$cliente) {
             return response()->json([
                 'message' => 'Número de teléfono no encontrado.'
             ], 404);
-         // Generar un código de 4 dígitos
-        $code = rand(1000, 9999);
+        }
 
-        // Encriptar y guardar el código en la base de datos
-         // Aquí puedes usar un servicio de SMS para enviar el código
-         //smtp
-         
-         Mail::to($cliente->email)->send(new CodeVerificationMail($code));
-            
+        // Generar un código de 4 dígitos y convertirlo a string
+        $code = strval(rand(1000, 9999));
 
+        // Enviar el código por correo electrónico
+        
 
-        $cliente->code = Hash::make($code);
-       if( $cliente->save()){
-            // Enviar el código al número de teléfono del cliente
-            // Aquí puedes usar un servicio de SMS para enviar el código
-            // Por ejemplo, Twilio, Nexmo, etc.
+        // Guardar el código encriptado en la base de datos
+        $cliente->code = $code;
+        Mail::to($cliente->email)->send(new CodeVerificationMail($cliente));
+        if ($cliente->save()) {
+            // Aquí puedes usar un servicio de SMS para enviar el código si lo deseas
             return response()->json([
-                'message' => 'Código enviado al número de teléfono.',
-                'code' => $code
+                'message' => 'Código enviado al número de teléfono.'
+                // El código solo debería enviarse por SMS/correo, pero puedes devolverlo aquí para pruebas
+                
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Error al enviar el código.'
             ], 500);
-        }
         }
     }
 
