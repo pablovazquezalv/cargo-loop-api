@@ -323,6 +323,31 @@ class ManagerController extends Controller
         return response()->json(['message' => 'Token inválido'], 401);
     }
 
+    public function dashboardData(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no autenticado.'], 401);
+        }
+
+        // Aquí puedes agregar la lógica para obtener los datos del dashboard
+        // Por ejemplo, obtener la empresa asociada al usuario
+        
+        return response()->json([
+            'message' => 'Datos del dashboard obtenidos exitosamente.',
+            'data' => [
+                'unidades' => 
+                $user->company ? $user->company->units()->count() : 0,
+                'transportistas' =>
+                $user->company ? $user->company->dealers()->count() : 0,
+                'entregas completadas' =>
+                $user->company ? $user->company->deliveries()->where('status', 'completed')->count() : 0,
+                'entregas pendientes' =>
+                $user->company ? $user->company->deliveries()->where('status', 'pending')->count() : 0,
+            ]
+        ], 200);
+    }
 
     //funcion para ver si tiene company_id
     public function hasCompanyId($id)

@@ -42,7 +42,7 @@ Route::prefix('manager')->group(function () {
     Route::post('/verifyToken', [ManagerController::class, 'verifyToken'])->name('manager.verify.token')->middleware('auth:sanctum'); // Verificar token
     Route::post('/loginWithPhone', [ManagerController::class, 'loginWithPhone']); // Iniciar sesión con teléfono
     Route::delete('/{id}', [ManagerController::class, 'destroy']); // Eliminar un manager
-  
+    Route::get('/dashboard', [ManagerController::class, 'dashboardData'])->middleware('auth:sanctum'); // Dashboard del manager
     //invitations
     Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum'); // Enviar invitación
   
