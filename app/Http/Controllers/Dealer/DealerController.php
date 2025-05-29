@@ -197,7 +197,8 @@ class DealerController extends Controller
         if ($cliente->save()) {
             // Aquí puedes usar un servicio de SMS para enviar el código si lo deseas
             return response()->json([
-                'message' => 'Código enviado al número de teléfono.'
+                'message' => 'Código enviado al número de teléfono.',
+                'data' => $cliente->only(['phone'])
                 // El código solo debería enviarse por SMS/correo, pero puedes devolverlo aquí para pruebas
                 
             ], 200);
@@ -211,8 +212,8 @@ class DealerController extends Controller
     public function verifyCode(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string|max:10',
-            'code' => 'required|string'
+            'phone' => 'required',
+            'code' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -227,7 +228,8 @@ class DealerController extends Controller
             ], 404);
         }
         // Verificar el código
-        if (!Hash::check($request->code, $cliente->code)) {
+        
+        if ($request->code != $cliente->code) {
             return response()->json([
                 'message' => 'Código incorrecto.'
             ], 422);
