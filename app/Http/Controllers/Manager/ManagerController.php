@@ -65,6 +65,11 @@ class ManagerController extends Controller
   
     }
   
+    //showRegistrationForm
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
     public function activeAccount(Request $request)
     {
         $user = Manager::where('email', $request->email)->first();
@@ -209,21 +214,32 @@ class ManagerController extends Controller
         if($user && Hash::check($request->password, $user->password))
         {
             // Iniciar sesión y generar token
+            // $token = $user->createToken('token')->plainTextToken;
+
+            // return response()->json([
+            //     'message' => 'Inicio de sesión exitoso.',
+            //     'data' => [
+            //         'user' => $user,
+            //         'token' => $token
+            //     ]
+            // ], 200);
+            Auth::login($user);
             $token = $user->createToken('token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'Inicio de sesión exitoso.',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token
-                ]
-            ], 200);
+            return redirect()->route('dashboard'); // 👈 Cambia a la ruta de tu panel
+
             
         } else {
-            return response()->json(['message' => 'Credenciales incorrectas.'], 401);
+            return redirect()->back()
+            ->with('error', 'El correo electrónico o la contraseña son incorrectos.')
+            ->withInput();
         }
     }
 
+    public function showLoginForm()
+    {
+        return view('/auth/login');
+    }
     public function forgetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
