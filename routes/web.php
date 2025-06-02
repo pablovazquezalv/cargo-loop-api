@@ -9,6 +9,7 @@ Route::get('/', function () {
 
 Route::get('/login', [ManagerController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ManagerController::class, 'loginWithMail'])->name('login.attempt');
+Route::get('/dashboard', [ManagerController::class, 'index'])->name('dashboard');
 
 Route::get('/register', [ManagerController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [ManagerController::class, 'register'])->name('register.manager');

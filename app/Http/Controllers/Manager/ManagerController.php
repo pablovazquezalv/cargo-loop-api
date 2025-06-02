@@ -22,6 +22,36 @@ use Nette\Utils\Random;
 
 class ManagerController extends Controller
 {
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        $companyId = $user->company_id; // puede ser null
+
+        if ($companyId === null) {
+            return view('dashboard.no_company');
+        }
+
+        // Suponiendo que ya tienes estas funciones implementadas en algún servicio o modelo
+        // $dashboardData = [
+        //     'unidades' => \App\Models\Unit::where('company_id', $companyId)->count(),
+        //     'transportistas' => \App\Models\User::where('company_id', $companyId)->where('role', 'driver')->count(),
+        //     'entregasCompletas' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'completado')->count(),
+        //     'entregasEnProceso' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'en_proceso')->count(),
+        // ];
+        $dashboardData = [
+            'unidades' => $user->company ? $user->company->units()->count() : 0,
+            'transportistas' => $user->company ? $user->company->dealers()->count() : 0,
+            'entregasCompletas' => $user->company ? $user->company->deliveries()->where('status', 'completed')->count() : 0,
+            'entregasEnProceso' => $user->company ? $user->company->deliveries()->where('status', 'pending')->count() : 0,
+        ];
+
+        return view('manager/dashboard', compact('dashboardData'));
+    }
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
               'name' => 'required|string|max:255',

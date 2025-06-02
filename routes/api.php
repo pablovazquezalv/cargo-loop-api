@@ -45,7 +45,7 @@ Route::prefix('manager')->group(function () {
     Route::delete('/{id}', [ManagerController::class, 'destroy']); // Eliminar un manager
     Route::get('/dashboard', [ManagerController::class, 'dashboardData'])->middleware('auth:sanctum'); // Dashboard del manager
     //invitations
-    Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum'); // Enviar invitación
+    Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum')->name('invite'); // Enviar invitación
   
     //forgetPassword
     Route::post('/forgetPassword', [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña
