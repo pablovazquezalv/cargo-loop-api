@@ -33,7 +33,7 @@ class ManagerController extends Controller
         $companyId = $user->company_id; // puede ser null
 
         if ($companyId === null) {
-            return view('dashboard.no_company');
+            return view('manager/no_company');
         }
 
         // Suponiendo que ya tienes estas funciones implementadas en algún servicio o modelo
@@ -119,12 +119,15 @@ class ManagerController extends Controller
         return response()->json(['message' => 'Cuenta activada exitosamente.'], 200);
     }
     
+
+    public function showCreateForm()
+    {
+        return view('manager.create-company');
+    }
     public function createCompany(Request $request)
     {
 
-        
-        
-        $user = $request->user();
+        $user = Auth::user();
 
        $userId = $user->id;
 
@@ -148,10 +151,9 @@ class ManagerController extends Controller
 
 
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Errores de validación.',
-                'errors' => $validator->errors()
-            ], 422);
+            return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
         }
         //Crear la empresa
         $company = new Company();
@@ -177,15 +179,17 @@ class ManagerController extends Controller
         // Asignar la empresa al usuario
         $user = Manager::find($userId);
         if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+
+            // Si el usuario no existe, retornar un error
+            return redirect()->back()
+            ->with('error', 'Usuario no encontrado.')   
+            ->withInput();
         }
         $user->company_id = $company->id;
         $user->save();
 
-        return response()->json([
-            'message' => 'Empresa creada exitosamente.',
-            'data' => $company
-        ], 201);
+        return redirect()->route('dashboard') // 👈 Cambia a la ruta de tu pane
+        ->with('success', 'Empresa creada exitosamente. Ahora puedes invitar a transportistas.');
        
     }
 
