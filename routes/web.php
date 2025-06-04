@@ -14,7 +14,7 @@ Route::get('/dashboard', [ManagerController::class, 'index'])->name('dashboard')
 Route::get('/manager/create-company', [ManagerController::class, 'showCreateForm'])->name('manager.createForm');
 Route::post('/manager/create-company', [ManagerController::class, 'createCompany'])->name('manager.createCompany');
 
-
+Route::post('/invitation', [ManagerController::class, 'createInvitationCode'])->name('invite');
 Route::get('/register', [ManagerController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [ManagerController::class, 'register'])->name('register.manager');
 
