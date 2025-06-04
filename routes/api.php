@@ -27,6 +27,7 @@ Route::prefix('dealer')->group(function () {
 });
 Route::prefix('client')->group(function () {
     Route::get('/', [ClientController::class, 'index']); // Listar clientes
+    Route::post('/loginWithPhone', [ClientController::class, 'loginWithPhone']); // Iniciar sesión con teléfono
     Route::post("/Registro", [ClientController::class, "create_user"]);
     Route::get('/{id}', [ClientController::class, 'show']); // Mostrar cliente
     Route::put('/{id}', [ClientController::class, 'update']); // Actualizar cliente
@@ -44,7 +45,7 @@ Route::prefix('manager')->group(function () {
     Route::delete('/{id}', [ManagerController::class, 'destroy']); // Eliminar un manager
     Route::get('/dashboard', [ManagerController::class, 'dashboardData'])->middleware('auth:sanctum'); // Dashboard del manager
     //invitations
-    Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum'); // Enviar invitación
+    Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum')->name('invite'); // Enviar invitación
   
     //forgetPassword
     Route::post('/forgetPassword', [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña

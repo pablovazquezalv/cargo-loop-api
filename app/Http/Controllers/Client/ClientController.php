@@ -50,13 +50,14 @@ class ClientController extends Controller
     /**
      * Iniciar sesión con el número de teléfono.
      */
-    public function login(Request $request)
+    public function loginWithPhone(Request $request)
     {
         $validated = $request->validate([
-            'Telefono' => 'required|string|max:15',
+            'phone' => 'required|string|max:15',
         ]);
 
-        $cliente = ClientModel::where('Telefono', $validated['Telefono'])->first();
+
+        $cliente = ClientModel::where('phone', $validated['phone'])->first();
 
         if (!$cliente) {
             return response()->json(['message' => 'Número de teléfono no encontrado.'], 404);

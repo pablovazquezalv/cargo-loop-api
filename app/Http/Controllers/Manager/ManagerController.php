@@ -22,6 +22,36 @@ use Nette\Utils\Random;
 
 class ManagerController extends Controller
 {
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect('/login');
+        }
+
+        $companyId = $user->company_id; // puede ser null
+
+        if ($companyId === null) {
+            return view('manager/no_company');
+        }
+
+        // Suponiendo que ya tienes estas funciones implementadas en algún servicio o modelo
+        // $dashboardData = [
+        //     'unidades' => \App\Models\Unit::where('company_id', $companyId)->count(),
+        //     'transportistas' => \App\Models\User::where('company_id', $companyId)->where('role', 'driver')->count(),
+        //     'entregasCompletas' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'completado')->count(),
+        //     'entregasEnProceso' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'en_proceso')->count(),
+        // ];
+        $dashboardData = [
+            'unidades' => $user->company ? $user->company->units()->count() : 0,
+            'transportistas' => $user->company ? $user->company->dealers()->count() : 0,
+            'entregasCompletas' => $user->company ? $user->company->deliveries()->where('status', 'completed')->count() : 0,
+            'entregasEnProceso' => $user->company ? $user->company->deliveries()->where('status', 'pending')->count() : 0,
+        ];
+
+        return view('manager/dashboard', compact('dashboardData'));
+    }
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
               'name' => 'required|string|max:255',
@@ -65,6 +95,11 @@ class ManagerController extends Controller
   
     }
   
+    //showRegistrationForm
+    public function showRegistrationForm()
+    {
+        return view('auth.register');
+    }
     public function activeAccount(Request $request)
     {
         $user = Manager::where('email', $request->email)->first();
@@ -84,12 +119,15 @@ class ManagerController extends Controller
         return response()->json(['message' => 'Cuenta activada exitosamente.'], 200);
     }
     
+
+    public function showCreateForm()
+    {
+        return view('manager.create-company');
+    }
     public function createCompany(Request $request)
     {
 
-        
-        
-        $user = $request->user();
+        $user = Auth::user();
 
        $userId = $user->id;
 
@@ -113,10 +151,9 @@ class ManagerController extends Controller
 
 
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Errores de validación.',
-                'errors' => $validator->errors()
-            ], 422);
+            return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
         }
         //Crear la empresa
         $company = new Company();
@@ -142,15 +179,17 @@ class ManagerController extends Controller
         // Asignar la empresa al usuario
         $user = Manager::find($userId);
         if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+
+            // Si el usuario no existe, retornar un error
+            return redirect()->back()
+            ->with('error', 'Usuario no encontrado.')   
+            ->withInput();
         }
         $user->company_id = $company->id;
         $user->save();
 
-        return response()->json([
-            'message' => 'Empresa creada exitosamente.',
-            'data' => $company
-        ], 201);
+        return redirect()->route('dashboard') // 👈 Cambia a la ruta de tu pane
+        ->with('success', 'Empresa creada exitosamente. Ahora puedes invitar a transportistas.');
        
     }
 
@@ -209,21 +248,32 @@ class ManagerController extends Controller
         if($user && Hash::check($request->password, $user->password))
         {
             // Iniciar sesión y generar token
+            // $token = $user->createToken('token')->plainTextToken;
+
+            // return response()->json([
+            //     'message' => 'Inicio de sesión exitoso.',
+            //     'data' => [
+            //         'user' => $user,
+            //         'token' => $token
+            //     ]
+            // ], 200);
+            Auth::login($user);
             $token = $user->createToken('token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'Inicio de sesión exitoso.',
-                'data' => [
-                    'user' => $user,
-                    'token' => $token
-                ]
-            ], 200);
+            return redirect()->route('dashboard'); // 👈 Cambia a la ruta de tu panel
+
             
         } else {
-            return response()->json(['message' => 'Credenciales incorrectas.'], 401);
+            return redirect()->back()
+            ->with('error', 'El correo electrónico o la contraseña son incorrectos.')
+            ->withInput();
         }
     }
 
+    public function showLoginForm()
+    {
+        return view('/auth/login');
+    }
     public function forgetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
