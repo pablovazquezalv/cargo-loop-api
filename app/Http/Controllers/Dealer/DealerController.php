@@ -29,7 +29,8 @@ class DealerController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'phone' => 'required|string|max:10'
+            'phone' => 'required|string|max:10',
+            'independiente'=>'required|boolean',
         ]);
        
         if ($validator->fails()) {
@@ -46,6 +47,8 @@ class DealerController extends Controller
             $user->password = Hash::make($request->password);
             $user->phone = $request->phone;
             $user->rol_id = 3; // Asignar rol de transportista por defecto
+            $user->independiente = $request->independiente;
+
             if($user->save()){ // <-- ¡Aquí está la corrección!
                 return response()->json([
                     'message' => 'Usuario creado exitosamente.',
@@ -178,6 +181,9 @@ class DealerController extends Controller
         }
 
         $cliente = Dealer::where('phone', $request->phone)->first();
+
+
+
         
         if (!$cliente) {
             return response()->json([
@@ -186,6 +192,12 @@ class DealerController extends Controller
         }
 
         // Generar un código de 4 dígitos y convertirlo a string
+
+        if ($cliente->status == 0) {
+            return response()->json([
+               'message' => 'Cuenta desactivada.'
+            ], 404);
+        }
         $code = strval(rand(1000, 9999));
 
         // Enviar el código por correo electrónico
@@ -210,46 +222,69 @@ class DealerController extends Controller
     }
 
     public function verifyCode(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'phone' => 'required',
-            'code' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Errores de validación.',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        $cliente = Dealer::where('phone', $request->phone)->first();
-        if (!$cliente) {
-            return response()->json([
-                'message' => 'Número de teléfono no encontrado.'
-            ], 404);
-        }
-        // Verificar el código
-        
-        if ($request->code != $cliente->code) {
-            return response()->json([
-                'message' => 'Código incorrecto.'
-            ], 422);
-        }
-        // Generar un token de acceso
-        $token = $cliente->createToken('access_token')->plainTextToken;
-        // Devolver el token al cliente
+{
+    $validator = Validator::make($request->all(), [
+        'phone' => 'required',
+        'code' => 'required'
+    ]);
+
+    if ($validator->fails()) {
         return response()->json([
-            'message' => 'Código verificado exitosamente',
-            'token' => $token,
-            'user' => $cliente->only(['id', 'name', 'email', 'phone'])
-        ], 200);
-
-
+            'message' => 'Errores de validación.',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    $cliente = Dealer::where('phone', $request->phone)->first();
+
+    if (!$cliente) {
+        return response()->json([
+            'message' => 'Número de teléfono no encontrado.'
+        ], 404);
+    }
+
+    // Verificar el código
+    if ($request->code != $cliente->code) {
+        return response()->json([
+            'message' => 'Código incorrecto.'
+        ], 422);
+    }
+
+    // Verificar si ya tiene invitado = 1
+    
+
+    // Generar un token de acceso
+    if ($cliente->incompany == 1) {
+        $empresa = DB::table('companies')
+        ->where('id', $cliente->company_id)
+        ->first();
+        $company = $empresa;
+        $token = $cliente->createToken('access_token')->plainTextToken;
+        return response()->json([
+           'message' => 'Código verificado exitosamente',
+            'token' => $token,
+            'user' => $cliente,
+            'company' => $company
+        ], 200);
+    }else{
+       
+
+    // Devolver el token y estado de invitado
+    return response()->json([
+        'message' => 'Código verificado exitosamente',
+        'token' => null,
+        'user' => $cliente
+    ], 200);
+    }
+   
+    
+}
 
 
     //unirse a una empresa por un id y codigo
     public function joinCompany(Request $request)
     {
+     
        $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:4',
             'email' => 'required|email|exists:invitations,email'
@@ -272,12 +307,15 @@ class DealerController extends Controller
         // Verificar si la invitación ya ha sido aceptada
         if ($invitation->accepted_at) {
             return response()->json([
-                'message' => 'La invitación ya ha sido aceptada.'
+                'message' => 'La invitación ya ha sido aceptada.',
+                'data' => $invitation,
+               
             ], 422);
         }
         //actualizar al transportista
         $transportista = Dealer::where('email', $request->email)->firstOrFail();
         $transportista->company_id = $invitation->company_id;
+        $transportista->incompany = 1;
         $transportista->save();
 
         // Marcar la invitación como aceptada
@@ -285,7 +323,8 @@ class DealerController extends Controller
         $invitation->save();
         return response()->json([
             'message' => 'Invitación aceptada exitosamente.',
-            'data' => $invitation
+            'data' => $invitation,
+            'transportista' => $transportista
         ], 200);
 
 
