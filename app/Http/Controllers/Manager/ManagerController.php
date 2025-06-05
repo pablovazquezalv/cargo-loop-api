@@ -221,14 +221,13 @@ class ManagerController extends Controller
 
         try{
             Mail::to($request->email)->send(new InvitationMail($invitation));
-            return response()->json([
-                'message' => 'Invitación enviada exitosamente.',
-                'data' => $invitation
-            ], 201);
+            return redirect()->back()
+            ->with('success', 'Invitación enviada exitosamente al correo: ' . $request->email);
         } catch (\Exception $e) {
 
-            return response()->json(['message' => 'Error al enviar la invitación por correo electrónico.',
-            'error' => $e->getMessage()], 500);
+            return redirect()->back()
+            ->with('error', 'Error al enviar la invitación: ' . $e->getMessage())
+            ->withInput();
         }
 
         

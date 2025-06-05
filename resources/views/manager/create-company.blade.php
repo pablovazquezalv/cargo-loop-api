@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,7 +7,6 @@
   {{-- ✅ Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* ✅ Animaciones básicas */
     .fade-in {
       opacity: 0;
       transform: translateY(-30px);
@@ -26,13 +24,19 @@
     }
   </style>
 </head>
+<body>
 <x-navbar />
+
 <div class="flex flex-col items-center justify-center min-h-screen bg-white px-4">
     <img src="{{ asset('Carga-loop-icon.png') }}" alt="Logo" class="h-24 mb-6" />
     <h1 class="text-3xl font-bold text-blue-800 mb-10">Crear Empresa</h1>
 
+    @if(session('error'))
+        <div class="mb-4 text-red-600">{{ session('error') }}</div>
+    @endif
+
     <form action="{{ route('manager.createCompany') }}" method="POST" enctype="multipart/form-data"
-        class="w-full max-w-lg p-8 bg-white rounded-lg shadow-md">
+          class="w-full max-w-lg p-8 bg-white rounded-lg shadow-md">
         @csrf
 
         @foreach ([
@@ -57,6 +61,9 @@
                     @if (!empty($field['required'])) required @endif
                     class="w-full mt-2 p-3 border rounded focus:outline-none focus:ring focus:ring-blue-200"
                 />
+                @error($field['id'])
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </label>
         @endforeach
 
@@ -69,6 +76,9 @@
                 accept="image/*"
                 class="w-full mt-2 p-2 border rounded text-sm text-gray-700"
             />
+            @error('profile_picture')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </label>
 
         <label class="block mb-6">
@@ -79,6 +89,9 @@
                 rows="4"
                 class="w-full mt-2 p-3 border rounded focus:outline-none focus:ring focus:ring-blue-200"
             >{{ old('description') }}</textarea>
+            @error('description')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </label>
 
         <button
@@ -89,3 +102,5 @@
         </button>
     </form>
 </div>
+</body>
+</html>
