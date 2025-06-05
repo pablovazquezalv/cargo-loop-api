@@ -12,7 +12,7 @@ class Invitation extends Model
 {
     //
     protected $table = 'invitations';
-    protected $fillable = ['id','company_id','user_id','code','status','email'];
+
 
     public static function generateCode()
     {

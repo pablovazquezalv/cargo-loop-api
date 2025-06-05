@@ -1,5 +1,5 @@
 <div>
-    <h1>Tu codigo para crear la cuenta es</h1>
+    <h1>Tu codigo de verificacion</h1>
     <p>Hola, tu código es: <strong>{{ $user->code }}</strong></p>
 
     

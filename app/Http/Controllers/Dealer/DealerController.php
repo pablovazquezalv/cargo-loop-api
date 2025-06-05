@@ -285,9 +285,10 @@ class DealerController extends Controller
     public function joinCompany(Request $request)
     {
      
+        // Validar los datos de la solicitud
        $validator = Validator::make($request->all(), [
-            'code' => 'required|string|max:4',
-            'email' => 'required|email|exists:invitations,email'
+            'code' => 'required|string',
+            'email' => 'required|email'
 
         ]);
 
