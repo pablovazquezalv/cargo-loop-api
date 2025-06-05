@@ -332,6 +332,28 @@ class DealerController extends Controller
 
         // Lógica para unirse a la empresa usando el ID y el código proporcionados
     }
+    public function ubicacion(Request $request){
+        $validator = Validator::make($request->all(), [
+            'latitude' =>'required',
+            'longitude' =>'required',
+            'email' =>'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+               'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
+
+        }
+        $dealer = Dealer::where('email', $request->email)->firstOrFail();
+        $dealer->latitude = $request->latitude;
+        $dealer->longitude = $request->longitude;
+        $dealer->save();
+        return response()->json([
+            'message' => 'Ubicación actualizada exitosamente.',
+            'data' => $dealer
+        ]);
+    }
 
 
 public function index()

@@ -26,7 +26,10 @@ return new class extends Migration
             $table->integer('independiente')->default(0); // 0: No, 1: Si
             $table->integer('incompany')->default(0); // 0: No, 1: Si
             $table->string('code')->nullable();
-
+            $table->string('ubication')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+           // 0: Pendiente, 1: Aprobado, 2: Rechazado
             $table->unsignedBigInteger('rol_id');
             $table->foreign('rol_id')->references('id')->on('roles')->onDelete('cascade');
 
