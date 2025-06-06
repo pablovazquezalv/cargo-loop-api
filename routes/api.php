@@ -22,6 +22,7 @@ Route::prefix('dealer')->group(function () {
     Route::post('/register/step2', [DealerController::class, 'registerSegundoPaso']);
     Route::post('/register/step3', [DealerController::class, 'registerTercerPaso']);
     Route::post('/loginWithPhone', [DealerController::class, 'loginWithPhone']);
+    Route::post('/ubication', [DealerController::class, 'ubicacion']);
     Route::post('/verifyCode', [DealerController::class, 'verifyCode']);
     Route::post('/joinCompany', [DealerController::class, 'joinCompany']);
 });
