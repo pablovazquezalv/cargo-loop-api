@@ -243,23 +243,31 @@ class ManagerController extends Controller
 
         $user = Manager::where('email', $request->email)->first();
             
+       
+
 
         if($user && Hash::check($request->password, $user->password))
         {
-            // Iniciar sesión y generar token
-            // $token = $user->createToken('token')->plainTextToken;
 
-            // return response()->json([
-            //     'message' => 'Inicio de sesión exitoso.',
-            //     'data' => [
-            //         'user' => $user,
-            //         'token' => $token
-            //     ]
-            // ], 200);
-            Auth::login($user);
-            $token = $user->createToken('token')->plainTextToken;
+            if($user->id === 1)
+            {
 
-            return redirect()->route('dashboard'); // 👈 Cambia a la ruta de tu panel
+                Auth::login($user);
+                $token = $user->createToken('token')->plainTextToken;
+                
+                return redirect()->route('dashboard-admin'); // 👈 Cambia a la ruta de tu panel
+
+            }
+
+            if($user->id === 2)
+            {
+                Auth::login($user);
+                $token = $user->createToken('token')->plainTextToken;
+
+                return redirect()->route('dashboard'); // 👈 Cambia a la ruta de tu panel
+            }
+
+
 
             
         } else {
@@ -380,9 +388,7 @@ class ManagerController extends Controller
             return response()->json(['message' => 'Usuario no autenticado.'], 401);
         }
 
-        // Aquí puedes agregar la lógica para obtener los datos del dashboard
-        // Por ejemplo, obtener la empresa asociada al usuario
-        
+       
         return response()->json([
             'message' => 'Datos del dashboard obtenidos exitosamente.',
             'data' => [
@@ -397,6 +403,8 @@ class ManagerController extends Controller
             ]
         ], 200);
     }
+
+    
 
     //funcion para ver si tiene company_id
     public function hasCompanyId($id)

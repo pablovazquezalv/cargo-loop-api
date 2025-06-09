@@ -7,6 +7,8 @@ use App\Http\Controllers\Dealer\DealerController;
 use App\Http\Controllers\Manager\CompanyController;
 use App\Http\Controllers\Client\ClientController;
 
+use App\Http\Controllers\Admin\AdminController;
+
 use App\Http\Controllers\Manager\ManagerController;
 
 
@@ -33,6 +35,9 @@ Route::prefix('client')->group(function () {
     Route::get('/{id}', [ClientController::class, 'show']); // Mostrar cliente
     Route::put('/{id}', [ClientController::class, 'update']); // Actualizar cliente
     Route::delete('/{id}', [ClientController::class, 'destroy']); // Eliminar cliente
+    
+
+
 });
 Route::prefix('manager')->group(function () {
     Route::get('/', [ManagerController::class, 'index']); // Listar todos los managers
@@ -53,6 +58,8 @@ Route::prefix('manager')->group(function () {
     Route::get('/resetPassword', [ManagerController::class, 'verifyCodeView'])->name('reset.password.view'); // Restablecer contraseña
     Route::post('/resetPassword/{id}', [ManagerController::class, 'resetPassword'])->name('reset.password'); // Restablecer contraseña
 });
+
+
 
 
 
