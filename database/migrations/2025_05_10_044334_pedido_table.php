@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('requerimiento_carga')->nullable(); // Requerimiento de carga
             $table->string('seguro_carga')->nullable(); // Archivo del seguro de carga
             $table->string('cartaporte')->nullable(); // Archivo del cartaporte
+            $table->string('estado_pedido', 20)->default('pendiente'); // Estado del pedido
             $table->timestamps();
 
             // Relación con la tabla user_cliente
