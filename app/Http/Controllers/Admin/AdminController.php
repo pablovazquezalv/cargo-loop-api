@@ -5,6 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Invitation\Invitation;
+
+use App\Models\Trasportista\Dealer;
+
+
 
 
 class AdminController extends Controller
@@ -35,12 +41,13 @@ class AdminController extends Controller
 
         return view('admin/dashboard', compact('dashboardData'));
     }
-//     public function showDashboardAdmin()
-// {
-//     $nuevosUsuarios = User::whereDate('created_at', today())->get();
-//     $invitaciones = Invitation::latest()->take(10)->get();
-//     $repartidores = Dealer::all(); // Asegúrate de tener este modelo
-
-//     return view('admin.dashboard', compact('nuevosUsuarios', 'invitaciones', 'repartidores'));
-// }
+    public function showDashboardAdmin()
+    {
+        $nuevosUsuarios = User::whereDate('created_at', today())->get() ?? collect();
+        $invitaciones = Invitation::latest()->take(10)->get() ?? collect();
+        $repartidores = Dealer::all() ?? collect();
+    
+        return view('admin.dashboard', compact('nuevosUsuarios', 'invitaciones', 'repartidores'));
+    }
+    
 }

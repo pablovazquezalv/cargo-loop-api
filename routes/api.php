@@ -30,8 +30,8 @@ Route::prefix('dealer')->group(function () {
 });
 Route::prefix('client')->group(function () {
     Route::get('/', [ClientController::class, 'index']); // Listar clientes
-    Route::post('/loginWithPhone', [ClientController::class, 'loginWithPhone']); // Iniciar sesión con teléfono
-    Route::post("/Registro", [ClientController::class, "create_user"]);
+    Route::post('/loginWithMail', [ClientController::class, 'loginWithMail']); // Iniciar sesión con teléfono
+    Route::post("/register", [ClientController::class, "register"]);
     Route::get('/{id}', [ClientController::class, 'show']); // Mostrar cliente
     Route::put('/{id}', [ClientController::class, 'update']); // Actualizar cliente
     Route::delete('/{id}', [ClientController::class, 'destroy']); // Eliminar cliente

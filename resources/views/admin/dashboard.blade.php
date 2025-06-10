@@ -17,15 +17,15 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
       <div class="bg-white shadow-md rounded-lg p-6 text-center">
-        <div class="text-4xl text-blue-700">{{ count($nuevosUsuarios) }}</div>
+        <div class="text-4xl text-blue-700">{{ count($nuevosUsuarios ?? []) }}</div>
         <div class="text-gray-600">Usuarios Nuevos</div>
       </div>
       <div class="bg-white shadow-md rounded-lg p-6 text-center">
-        <div class="text-4xl text-green-700">{{ count($invitaciones) }}</div>
+        <div class="text-4xl text-green-700">{{ count($invitaciones ?? []) }}</div>
         <div class="text-gray-600">Invitaciones Enviadas</div>
       </div>
       <div class="bg-white shadow-md rounded-lg p-6 text-center">
-        <div class="text-4xl text-purple-700">{{ count($repartidores) }}</div>
+        <div class="text-4xl text-purple-700">{{ count($repartidores ?? []) }}</div>
         <div class="text-gray-600">Repartidores</div>
       </div>
     </div>
@@ -35,7 +35,7 @@
       <div>
         <h2 class="text-xl font-semibold mb-4">Usuarios Nuevos</h2>
         <ul class="bg-white rounded shadow divide-y divide-gray-200">
-          @forelse ($nuevosUsuarios as $usuario)
+            @forelse ($nuevosUsuarios ?? [] as $usuario)
             <li class="p-4">{{ $usuario->name }} — {{ $usuario->email }}</li>
           @empty
             <li class="p-4 text-gray-500">Sin usuarios nuevos.</li>
@@ -47,7 +47,7 @@
       <div>
         <h2 class="text-xl font-semibold mb-4">Invitaciones</h2>
         <ul class="bg-white rounded shadow divide-y divide-gray-200">
-          @forelse ($invitaciones as $inv)
+          @forelse ($invitaciones ?? [] as $inv)
             <li class="p-4">
               {{ $inv->email }} — <span class="text-sm text-gray-500">Enviada: {{ $inv->created_at->format('d/m/Y') }}</span>
             </li>
@@ -61,7 +61,7 @@
       <div>
         <h2 class="text-xl font-semibold mb-4">Repartidores</h2>
         <ul class="bg-white rounded shadow divide-y divide-gray-200">
-          @forelse ($repartidores as $rep)
+          @forelse ($repartidores ?? [] as $rep)
             <li class="p-4">{{ $rep->name }} — {{ $rep->phone }}</li>
           @empty
             <li class="p-4 text-gray-500">Sin repartidores registrados.</li>

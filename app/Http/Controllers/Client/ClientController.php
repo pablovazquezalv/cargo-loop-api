@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Client;
 use App\Models\Client\ClientModel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Roles\rol;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Client\ClientModel as Client;
+
 
 use Illuminate\Support\Facades\Validator;
 
@@ -38,6 +41,7 @@ class ClientController extends Controller
         $cliente->email = $request->email;
         $cliente->password = Hash::make($request->password);
         $cliente->phone = $request->phone;
+        $cliente->rol_id = 4;
 
         if (!$cliente->save()) {
             return response()->json(['message' => 'Error al crear el cliente.'], 500);
@@ -50,29 +54,36 @@ class ClientController extends Controller
     /**
      * Iniciar sesión con el número de teléfono.
      */
-    public function loginWithPhone(Request $request)
+    public function loginWithMail(Request $request)
     {
-        $validated = $request->validate([
-            'phone' => 'required|string|max:15',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
+
         ]);
 
-
-        $cliente = ClientModel::where('phone', $validated['phone'])->first();
-
-        if (!$cliente) {
-            return response()->json(['message' => 'Número de teléfono no encontrado.'], 404);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Errores de validación.',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        
-        $code = rand(1000, 9999);
 
-        
-        $cliente->code = Hash::make($code);
-        $cliente->save();
 
-        // Aquí puedes enviar el código al cliente (por SMS o correo electrónico)
-        // Por simplicidad, lo devolvemos en la respuesta
-        return response()->json(['message' => 'Código generado.', 'code' => $code]);
+        $user = Client::where('email', $request->email)->first();
+            
+       
+
+        if($user && Hash::check($request->password, $user->password))
+        {
+            $token = $user->createToken('token')->plainTextToken;
+
+            return response()->json(['message' => 'Autenticación exitosa.', 'token' => $token]);
+            
+        }
+        return response()->json(['message' => 'Cliente no encontrado.'], 404);
+       
     }
 
     /**
