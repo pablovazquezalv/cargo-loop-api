@@ -10,8 +10,7 @@ use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Admin\AdminController;
 
 use App\Http\Controllers\Manager\ManagerController;
-
-
+use App\Http\Controllers\Pedido\PedidoController;
 
 Route::prefix('dealer')->group(function () {
     Route::get('/', [DealerController::class, 'index']); // Listar todos los transportistas
@@ -39,6 +38,18 @@ Route::prefix('client')->group(function () {
 
 
 });
+
+
+
+Route::prefix('pedido')->group(function () {
+    Route::post('/crear', [PedidoController::class, 'crearPedido']); // Crear un pedido
+    Route::get('/listar', [PedidoController::class, 'listarPedidos']); // Listar todos los pedidos
+    Route::get('/cliente/{cliente_id}', [PedidoController::class, 'listarPedidosPorCliente']); // Listar pedidos por cliente
+});
+
+
+
+
 Route::prefix('manager')->group(function () {
     Route::get('/', [ManagerController::class, 'index']); // Listar todos los managers
     Route::post('/loginWithMail', [ManagerController::class, 'loginWithMail']); // Iniciar sesión con correo electrónico

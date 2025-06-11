@@ -14,23 +14,66 @@ return new class extends Migration
     {
          Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            $table->date('fecha_carga'); // Fecha de carga
-            $table->string('lugar_origen'); // Lugar de origen
-            $table->string('lugar_destino'); // Lugar de destino
-            $table->string('tipo_unidad'); // Tipo de unidad
-            $table->string('tipo_carga'); // Tipo de carga
-            $table->text('descripcion_carga')->nullable(); // Descripción de la carga
-            $table->string('especificacion_carga')->nullable(); // Especificaciones de la carga
-            $table->string('nombre_contacto'); // Nombre de la persona de contacto
-            $table->decimal('valor_carga', 10, 2); // Valor de la carga
-            $table->boolean('aplica_seguro')->default(false); // Si aplica seguro
-            $table->text('observaciones')->nullable(); // Observaciones
-            $table->string('tipo_industria')->nullable(); // Tipo de industria
-            $table->string('requerimiento_carga')->nullable(); // Requerimiento de carga
-            $table->string('seguro_carga')->nullable(); // Archivo del seguro de carga
-            $table->string('cartaporte')->nullable(); // Archivo del cartaporte
-            $table->string('estado_pedido', 20)->default('pendiente'); // Estado del pedido
+
+            // 🔗 Relaciones
+            $table->unsignedBigInteger('id_company'); // Empresa que recibe el pedido
+            $table->unsignedBigInteger('id_repartidor')->nullable(); // Repartidor asignado
+            $table->unsignedBigInteger('cliente_id')->nullable(); // Cliente que hace el pedido (opcional)
+
+            // 📦 Datos del pedido
+            $table->integer('cantidad')->default(1);
+            $table->string('estado_pedido', 20)->default('pendiente'); // pendiente, en_proceso, entregado, cancelado, etc.
+            $table->text('observaciones')->nullable(); // Observaciones generales del pedido
+
+            // 🛍️ Producto o material
+            $table->string('tipo_de_material'); // Tipo de carga o producto
+            $table->decimal('peso'
+            )->nullable(); // Peso en kg
+            $table->string('dimensiones')->nullable(); // Ej: 40x40x20 cm
+            $table->text('descripcion_carga')->nullable();
+            $table->string('especificacion_carga')->nullable();
+            $table->string('tipo_industria')->nullable();
+            $table->string('requerimiento_carga')->nullable();
+
+            // 🚗 Vehículo
+            $table->string('tipo_de_vehiculo'); // Moto, coche, camión, etc.
+            $table->string('tipo_unidad'); // Unidad específica
+
+            // 💳 Pago
+            $table->string('tipo_de_pago'); // Efectivo, tarjeta, etc.
+            $table->decimal('valor_carga'); // Valor monetario de la carga
+            $table->decimal('total')->nullable(); // Total general
+
+            // 📍 Ubicación - Recoger
+            $table->decimal('ubicacion_recoger_lat' );
+            $table->decimal('ubicacion_recoger_long');
+            $table->string('ubicacion_recoger_descripcion');
+
+            // 🏠 Ubicación - Entregar
+            $table->decimal('ubicacion_entregar_lat');
+            $table->decimal('ubicacion_entregar_long');
+            $table->string('ubicacion_entregar_direccion');
+
+            // 👤 Contacto
+            $table->string('nombre_contacto');
+
+            // 📄 Archivos adjuntos
+            $table->string('seguro_carga')->nullable(); // Archivo del seguro
+            $table->string('cartaporte')->nullable(); // Archivo de cartaporte
+            $table->boolean('aplica_seguro')->default(false);
+
+            // ⏱️ Tiempos
+            $table->date('fecha_carga'); // Fecha del inicio del pedido
+            $table->timestamp('fecha_pedido')->nullable(); // Registro del pedido
+            $table->timestamp('hora_entrega_estimada')->nullable();
+            $table->timestamp('hora_entrega_real')->nullable();
+
             $table->timestamps();
+
+            // 🔒 Foreign keys (opcional si tienes modelos)
+             $table->foreign('id_company')->references('id')->on('companies');
+             $table->foreign('id_repartidor')->references('id')->on('users');
+             $table->foreign('cliente_id')->references('id')->on('clientes');
 
             // Relación con la tabla user_cliente
         });
