@@ -14,24 +14,30 @@ class PedidoController extends Controller
     {
         // ✅ Validación
         $validator = Validator::make($request->all(), [
-            'fecha_carga' => 'required|date',
-            'lugar_origen' => 'required|string',
-            'lugar_destino' => 'required|string',
-            'tipo_unidad' => 'required|string',
-            'tipo_carga' => 'required|string',
-            'descripcion_carga' => 'nullable|string',
-            'especificacion_carga' => 'nullable|string',
-            'nombre_contacto' => 'required|string',
-            'valor_carga' => 'required|numeric',
-            'aplica_seguro' => 'boolean',
-            'observaciones' => 'nullable|string',
-            'tipo_industria' => 'nullable|string',
-            'requerimiento_carga' => 'nullable|string',
-            'seguro_carga' => 'nullable|string',
-            'cartaporte' => 'nullable|string',
-            'estado_pedido' => 'nullable|string',
-            'id_company' => 'required|integer',
-            'cliente_id' =>'required|integer'
+             'fecha_carga' => 'required|date',
+            // 'lugar_origen' => 'required|string',
+            // 'lugar_destino' => 'required|string',
+             'tipo_unidad' => 'required|string',
+             'tipo_carga' => 'required|string',
+             'descripcion_carga' => 'nullable|string',
+             'especificacion_carga' => 'nullable|string',
+             'nombre_contacto' => 'required|string',
+             'valor_carga' => 'required|numeric',
+             'aplica_seguro' => 'boolean',
+             'observaciones' => 'nullable|string',
+            
+             'seguro_carga' => 'nullable|string',
+             'cartaporte' => 'nullable|string',
+             'estado_pedido' => 'nullable|string',
+             'id_company' => 'required|integer',
+             'cliente_id' =>'required|integer',
+             'ubicacion_recoger_lat' => 'required|numeric',
+             'ubicacion_recoger_long' => 'required|numeric',
+             'ubicacion_recoger_descripcion' => 'required|string',
+             'ubicacion_entregar_direccion' =>'required|string',
+             'ubicacion_entregar_lat' => 'required|numeric',
+             'ubicacion_entregar_long' => 'required|numeric',
+             'cantidad' => 'required|integer'
 
         ]);
 
@@ -50,24 +56,27 @@ class PedidoController extends Controller
 
         // 📦 Crear el pedido
         $pedido = new pedidos();
-        $pedido->fecha_carga = $request->fecha_carga;
-        $pedido->lugar_origen = $request->lugar_origen;
-        $pedido->lugar_destino = $request->lugar_destino;
-        $pedido->tipo_unidad = $request->tipo_unidad;
-        $pedido->tipo_carga = $request->tipo_carga;
-        $pedido->descripcion_carga = $request->descripcion_carga;
-        $pedido->especificacion_carga = $request->especificacion_carga;
-        $pedido->nombre_contacto = $request->nombre_contacto;
-        $pedido->valor_carga = $request->valor_carga;
-        $pedido->aplica_seguro = $request->aplica_seguro ?? false;
-        $pedido->observaciones = $request->observaciones;
-        $pedido->tipo_industria = $request->tipo_industria;
-        $pedido->requerimiento_carga = $request->requerimiento_carga;
-        $pedido->seguro_carga = $request->seguro_carga;
-        $pedido->cartaporte = $request->cartaporte;
-        $pedido->estado_pedido = $request->estado_pedido ?? 'pendiente';
-        $pedido->id_company = $request->id_company;
-        $pedido->cliente_id = $request->cliente_id;
+         $pedido->fecha_carga = $request->fecha_carga;
+         $pedido->tipo_unidad = $request->tipo_unidad;
+         $pedido->cantidad = $request->cantidad;
+         $pedido->tipo_carga = $request->tipo_carga;
+         $pedido->descripcion_carga = $request->descripcion_carga;
+         $pedido->valor_carga = $request->valor_carga;
+         $pedido->aplica_seguro = $request->aplica_seguro ?? false;
+         $pedido->especificacion_carga = $request->especificacion_carga;
+         $pedido->observaciones = $request->observaciones;
+         $pedido->seguro_carga = $request->seguro_carga;
+         $pedido->cartaporte = $request->cartaporte;
+         $pedido->estado_pedido = $request->estado_pedido ?? 'pendiente';
+         $pedido->id_company = $request->id_company;
+         $pedido->cliente_id = $request->cliente_id;
+         $pedido->ubicacion_recoger_lat = $request->ubicacion_recoger_lat;
+         $pedido->ubicacion_recoger_long = $request->ubicacion_recoger_long;
+         $pedido->ubicacion_recoger_descripcion = $request->ubicacion_recoger_descripcion;
+         $pedido->ubicacion_entregar_lat = $request->ubicacion_entregar_lat;
+         $pedido->ubicacion_entregar_long = $request->ubicacion_entregar_long;
+         $pedido->ubicacion_entregar_direccion = $request->ubicacion_entregar_direccion;
+
     
 
         if ($pedido->save()) {
