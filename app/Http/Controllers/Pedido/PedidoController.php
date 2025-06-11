@@ -84,6 +84,9 @@ class PedidoController extends Controller
         return response()->json(['error' => 'No se pudo crear el pedido'], 500);
     }
 
+
+
+
     public function listarPedidos()
     {
         $pedidos = pedidos::all();
@@ -95,4 +98,56 @@ class PedidoController extends Controller
         $pedidos = pedidos::where('cliente_id', $cliente_id)->get();
         return response()->json($pedidos);
     }
+
+
+
+
+
+
+    public function aceptarPedido($pedido_id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_user' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+    
+        // Buscar el pedido
+        $pedido = pedidos::find($pedido_id);
+        if (!$pedido) {
+            return response()->json(['error' => 'Pedido no encontrado'], 404);
+        }
+    
+        // Actualizar el estado del pedido
+        $pedido->id_repartidor = $request->id_user;
+        $pedido->estado_pedido = 'aceptado';
+        $pedido->save();
+    
+        return response()->json(['message' => 'Pedido aceptado','Pedido'=>$pedido], 200);
+    }
+    
+
+
+
+
+
+
+
+    public function pedidosDisponibles(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_company' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+    
+        $pedidos = pedidos::where('estado_pedido', 'disponible')
+            ->where('id_company', $request->id_company)
+            ->get();
+    
+        return response()->json($pedidos);
+    }
+    
 }

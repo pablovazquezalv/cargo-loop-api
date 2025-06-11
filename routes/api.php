@@ -41,12 +41,14 @@ Route::prefix('client')->group(function () {
 
 
 
-Route::prefix('pedido')->group(function () {
-    Route::post('/crear', [PedidoController::class, 'crearPedido']); // Crear un pedido
-    Route::get('/listar', [PedidoController::class, 'listarPedidos']); // Listar todos los pedidos
-    Route::get('/cliente/{cliente_id}', [PedidoController::class, 'listarPedidosPorCliente']); // Listar pedidos por cliente
-});
 
+Route::prefix('pedido')->group(function () {
+    Route::post('/crear', [PedidoController::class, 'crearPedido']);
+    Route::get('/listar', [PedidoController::class, 'listarPedidos']);
+    Route::get('/cliente/{cliente_id}', [PedidoController::class, 'listarPedidosPorCliente']);
+    Route::post('/aceptar/{pedido_id}', [PedidoController::class, 'aceptarPedido']);
+    Route::post('/disponibles', [PedidoController::class, 'pedidosDisponibles']);
+});
 
 
 
