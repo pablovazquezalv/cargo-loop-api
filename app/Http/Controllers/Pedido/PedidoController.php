@@ -46,13 +46,13 @@ class PedidoController extends Controller
         }
 
         // 🔍 Buscar repartidor disponible (dealer)
-        $dealer = Dealer::where('company_id', $request->input('company_id', 1)) // Puedes cambiar esto
-                        ->where('estado', 'disponible')
-                        ->first();
+        // $dealer = Dealer::where('company_id', $request->input('company_id', 1)) // Puedes cambiar esto
+        //                 ->where('estado', 'disponible')
+        //                 ->first();
 
-        if (!$dealer) {
-            return response()->json(['error' => 'No hay repartidores disponibles en este momento'], 409);
-        }
+        // if (!$dealer) {
+        //     return response()->json(['error' => 'No hay repartidores disponibles en este momento'], 409);
+        // }
 
         // 📦 Crear el pedido
         $pedido = new pedidos();
@@ -80,13 +80,13 @@ class PedidoController extends Controller
     
 
         if ($pedido->save()) {
-            $dealer->estado = 'ocupado';
-            $dealer->save();
+            // $dealer->estado = 'ocupado';
+            // $dealer->save();
 
             return response()->json([
                 'message' => 'Pedido creado exitosamente',
                 'pedido_id' => $pedido->id,
-                'dealer_id' => $dealer->id
+                // 'dealer_id' => $dealer->id
             ], 201);
         }
 
