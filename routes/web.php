@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Manager\ManagerController;
+use App\Http\Controllers\Client\ClientController;
 
 
 use App\Http\Controllers\Admin\AdminController;
@@ -23,3 +24,4 @@ Route::get('/register', [ManagerController::class, 'showRegistrationForm'])->nam
 Route::post('/register', [ManagerController::class, 'register'])->name('register.manager');
 
 Route::post('/password/email', [ManagerController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('/contactoInformes',[ClientController::class,'contactoInformes'])->name('contacto.enviar');

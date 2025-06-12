@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Roles\rol;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+
 use App\Models\Client\ClientModel as Client;
 
 
@@ -139,5 +141,21 @@ class ClientController extends Controller
 
         $cliente->delete();
         return response()->json(['message' => 'Cliente eliminado exitosamente.']);
+    }
+
+    public function contactoInformes(Request $request)
+    {
+        $validator = $request->validate([
+            'email' => 'required|email',
+            'mensaje' => 'required|string',
+        ]);
+        Mail::raw($validator['mensaje'], function ($message) use ($validator) {
+            $message->to('tucorreo@dominio.com') // cambia por tu correo real
+                    ->subject('Nuevo mensaje de contacto')
+                    ->from($validator['email']);
+        });
+    
+        return back()->with('success', 'Mensaje enviado con éxito.');
+         
     }
 }

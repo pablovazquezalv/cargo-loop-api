@@ -208,7 +208,7 @@ class ManagerController extends Controller
             ], 422);
         }
 
-        $manager = $request->user();
+        $manager = Auth::user();
 
         $code = Invitation::generateCode();
 
@@ -254,7 +254,7 @@ class ManagerController extends Controller
 
                 Auth::login($user);
                 $token = $user->createToken('token')->plainTextToken;
-                
+
                 return redirect()->route('dashboard-admin'); // 👈 Cambia a la ruta de tu panel
 
             }
