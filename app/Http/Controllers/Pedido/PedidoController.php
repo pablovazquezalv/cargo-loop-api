@@ -18,14 +18,14 @@ class PedidoController extends Controller
             // 'lugar_origen' => 'required|string',
             // 'lugar_destino' => 'required|string',
              'tipo_unidad' => 'required|string',
-             'tipo_carga' => 'required|string',
+            
              'descripcion_carga' => 'nullable|string',
              'especificacion_carga' => 'nullable|string',
-             'nombre_contacto' => 'required|string',
+            
              'valor_carga' => 'required|numeric',
              'aplica_seguro' => 'boolean',
              'observaciones' => 'nullable|string',
-            
+              'tipo_De_vehiculo' =>'required|string',
              'seguro_carga' => 'nullable|string',
              'cartaporte' => 'nullable|string',
              'estado_pedido' => 'nullable|string',
@@ -37,7 +37,10 @@ class PedidoController extends Controller
              'ubicacion_entregar_direccion' =>'required|string',
              'ubicacion_entregar_lat' => 'required|numeric',
              'ubicacion_entregar_long' => 'required|numeric',
-             'cantidad' => 'required|integer'
+             'cantidad' => 'required|integer',
+             'tipo_de_material' => 'required|string',
+             'tipo_de_pago' =>'required|string',
+             'nombre_contacto' =>'required|string'
 
         ]);
 
@@ -56,10 +59,12 @@ class PedidoController extends Controller
 
         // 📦 Crear el pedido
         $pedido = new pedidos();
+        $pedido->nombre_contacto = $request->nombre_contacto;
+        $pedido->tipo_de_pago = $request->tipo_de_pago;
          $pedido->fecha_carga = $request->fecha_carga;
          $pedido->tipo_unidad = $request->tipo_unidad;
          $pedido->cantidad = $request->cantidad;
-         $pedido->tipo_carga = $request->tipo_carga;
+         $pedido->tipo_de_material = $request->tipo_de_material;
          $pedido->descripcion_carga = $request->descripcion_carga;
          $pedido->valor_carga = $request->valor_carga;
          $pedido->aplica_seguro = $request->aplica_seguro ?? false;
@@ -67,9 +72,10 @@ class PedidoController extends Controller
          $pedido->observaciones = $request->observaciones;
          $pedido->seguro_carga = $request->seguro_carga;
          $pedido->cartaporte = $request->cartaporte;
-         $pedido->estado_pedido = $request->estado_pedido ?? 'pendiente';
+         $pedido->estado_pedido = $request->estado_pedido ?? 'disponible';
          $pedido->id_company = $request->id_company;
          $pedido->cliente_id = $request->cliente_id;
+         $pedido->tipo_de_vehiculo = $request->tipo_De_vehiculo;
          $pedido->ubicacion_recoger_lat = $request->ubicacion_recoger_lat;
          $pedido->ubicacion_recoger_long = $request->ubicacion_recoger_long;
          $pedido->ubicacion_recoger_descripcion = $request->ubicacion_recoger_descripcion;
@@ -154,7 +160,7 @@ class PedidoController extends Controller
     
         $pedidos = pedidos::where('estado_pedido', 'disponible')
             ->where('id_company', $request->id_company)
-            ->get();
+            ->first();
     
         return response()->json($pedidos);
     }

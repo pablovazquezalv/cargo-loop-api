@@ -27,8 +27,7 @@ return new class extends Migration
 
             // 🛍️ Producto o material
             $table->string('tipo_de_material'); // Tipo de carga o producto
-            $table->decimal('peso'
-            )->nullable(); // Peso en kg
+            $table->decimal('peso')->nullable(); // Peso en kg
             $table->string('dimensiones')->nullable(); // Ej: 40x40x20 cm
             $table->text('descripcion_carga')->nullable();
             $table->string('especificacion_carga')->nullable();
@@ -71,9 +70,9 @@ return new class extends Migration
             $table->timestamps();
 
             // 🔒 Foreign keys (opcional si tienes modelos)
-             $table->foreign('id_company')->references('id')->on('companies');
-             $table->foreign('id_repartidor')->references('id')->on('users');
-             $table->foreign('cliente_id')->references('id')->on('clientes');
+             $table->foreign('id_company')->references('id')->on('companies')->onDelete('cascade');;
+             $table->foreign('id_repartidor')->references('id')->on('users')->onDelete('cascade');;
+             $table->foreign('cliente_id')->references('id')->on('users')->onDelete('cascade');;
 
             // Relación con la tabla user_cliente
         });
@@ -87,7 +86,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Relación con la tabla pedidos
-            $table->foreign('pedido_id')->references('id')->on('pedidos');
+            $table->foreign('pedido_id')->references('id')->on('pedidos')->onDelete('cascade');;
         });
           Schema::create('comprobante_pedido', function (Blueprint $table) {
             $table->id();
@@ -98,6 +97,7 @@ return new class extends Migration
             $table->timestamp('asignado_en')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();
 
+            $table->foreign('pedido_transportista_id')->references('id')->on('pedido_transportista')->onDelete('cascade');;
             // Relación con la tabla pedido_transportista
         });
 
@@ -113,7 +113,8 @@ return new class extends Migration
             $table->timestamps();
 
             // Relación con la tabla pedidos
-            $table->foreign('pedido_id')->references('id')->on('pedidos');
+            $table->foreign('pedido_id')->references('id')->on('pedidos')->onDelete('cascade');;
+            $table->foreign('transportista_id')->references('id')->on('users')->onDelete('cascade');;
         });
 
     }
@@ -123,6 +124,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('pedidos');
+        Schema::dropIfExists('liberacion_pedidos');
+        Schema::dropIfExists('comprobante_pedido');
+        Schema::dropIfExists('pedido_transportista');
+       
     }
 };
