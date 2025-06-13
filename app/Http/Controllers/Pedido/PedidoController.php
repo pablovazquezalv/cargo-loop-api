@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pedido;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\pedido\pedidos;
+use App\Models\pedidoTrasportista\pedidoTrasportista;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Trasportista\Dealer;
 
@@ -134,12 +135,13 @@ class PedidoController extends Controller
             return response()->json(['error' => 'Pedido no encontrado'], 404);
         }
 
-        
+
     
         // Actualizar el estado del pedido
         $pedido->id_repartidor = $request->id_user;
         $pedido->estado_pedido = 'aceptado';
         $pedido->save();
+       
     
         return response()->json(['message' => 'Pedido aceptado','Pedido'=>$pedido], 200);
     }
