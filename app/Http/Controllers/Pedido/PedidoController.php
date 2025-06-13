@@ -8,6 +8,7 @@ use App\Models\pedido\pedidos;
 use App\Models\pedidoTrasportista\pedidoTrasportista;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Trasportista\Dealer;
+use Illuminate\Support\Facades\DB;
 
 class PedidoController extends Controller
 {
@@ -131,6 +132,7 @@ class PedidoController extends Controller
     
         // Buscar el pedido
         $pedido = pedidos::find($pedido_id);
+       
         if (!$pedido) {
             return response()->json(['error' => 'Pedido no encontrado'], 404);
         }
@@ -141,6 +143,16 @@ class PedidoController extends Controller
         $pedido->id_repartidor = $request->id_user;
         $pedido->estado_pedido = 'aceptado';
         $pedido->save();
+        $pedidoTrasportista = DB::table('pedido_trasportista')->insert([
+            'id_pedido' => $pedido_id,
+            'id_user' => $request->id_user,
+            'estado' => 'aceptado',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        if (!$pedidoTrasportista) {
+            return response()->json(['error' => 'No se pudo crear el pedido'], 500);
+        }
        
     
         return response()->json(['message' => 'Pedido aceptado','Pedido'=>$pedido], 200);
@@ -165,4 +177,25 @@ class PedidoController extends Controller
         return response()->json($pedidos);
     }
     
+
+    public function pedidosFinalizadosporTransportista($id_user){
+        $pedidos = pedidos::where('id_repartidor', $id_user)
+        ->where('estado_pedido', 'finalizado')
+        ->get();
+        return response()->json($pedidos);
+    }
+
+    public function pedidosporTrasposrtista($id_user){
+        $pedidos = pedidos::where('id_repartidor', $id_user)
+        ->where('estado_pedido', 'finalizado')
+        ->get();
+        return response()->json($pedidos);
+    }
+    
+    public function pedidosCanceladosporTransportista($id_user){
+        $pedidos = pedidos::where('id_repartidor', $id_user)
+        ->where('estado_pedido', 'cancelado')
+        ->get();
+        return response()->json($pedidos);
+    }
 }

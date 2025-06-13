@@ -48,7 +48,8 @@ Route::prefix('pedido')->group(function () {
     Route::get('/cliente/{cliente_id}', [PedidoController::class, 'listarPedidosPorCliente']);
     Route::post('/aceptar/{pedido_id}', [PedidoController::class, 'aceptarPedido']);
     Route::post('/disponibles', [PedidoController::class, 'pedidosDisponibles']);
-});
+    Route::get('/finalizados/{id_user}',[PedidoController::class,'pedidosFinalizadosporTransportista']);
+    });
 
 
 
