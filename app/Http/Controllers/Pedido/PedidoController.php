@@ -133,6 +133,8 @@ class PedidoController extends Controller
         if (!$pedido) {
             return response()->json(['error' => 'Pedido no encontrado'], 404);
         }
+
+        
     
         // Actualizar el estado del pedido
         $pedido->id_repartidor = $request->id_user;
@@ -142,10 +144,6 @@ class PedidoController extends Controller
         return response()->json(['message' => 'Pedido aceptado','Pedido'=>$pedido], 200);
     }
     
-
-
-
-
 
 
 

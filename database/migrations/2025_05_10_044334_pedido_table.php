@@ -44,13 +44,13 @@ return new class extends Migration
             $table->decimal('total')->nullable(); // Total general
 
             // 📍 Ubicación - Recoger
-            $table->decimal('ubicacion_recoger_lat' );
-            $table->decimal('ubicacion_recoger_long');
+            $table->double('ubicacion_recoger_lat' );
+            $table->double('ubicacion_recoger_long');
             $table->string('ubicacion_recoger_descripcion');
 
             // 🏠 Ubicación - Entregar
-            $table->decimal('ubicacion_entregar_lat');
-            $table->decimal('ubicacion_entregar_long');
+            $table->double('ubicacion_entregar_lat');
+            $table->double('ubicacion_entregar_long');
             $table->string('ubicacion_entregar_direccion');
 
             // 👤 Contacto
@@ -92,6 +92,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pedido_transportista_id');
             $table->string('fotos_de_mercancia');
+            $table->string('fotos_de_mercancia_1');
+            $table->string('fotos_de_mercancia_2');
+            $table->string('fotos_de_mercancia_3');
+            $table->string('fotos_de_mercancia_4');
             $table->string('foto_factura');
             $table->integer('cantidad');
             $table->timestamp('asignado_en')->default(DB::raw('CURRENT_TIMESTAMP'));
