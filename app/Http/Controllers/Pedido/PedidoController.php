@@ -193,9 +193,54 @@ class PedidoController extends Controller
     }
     
     public function pedidosCanceladosporTransportista($id_user){
-        $pedidos = pedidos::where('id_repartidor', $id_user)
-        ->where('estado_pedido', 'cancelado')
+        // $pedidos = pedidos::where('id_repartidor', $id_user)
+        // ->where('estado_pedido', 'cancelado')
+        // ->get();
+        $pedidos = DB::table('pedido_trasportista')
+        ->join('pedidos', 'pedido_trasportista.id_pedido', '=', 'pedidos.id')
+        ->where('pedido_trasportista.id_user', $id_user)
+        ->where('pedido_trasportista.estado', 'cancelado')
+        ->select('pedidos.*')
         ->get();
         return response()->json($pedidos);
+    }
+
+
+  public function finalizarPedido($pedido_id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_user' =>'required|integer',
+            'fotos_de_mercancia' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'fotos_de_mercancia_1'=> 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'fotos_de_mercancia_2'=>'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'fotos_de_mercancia_3'=>'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'fotos_de_mercancia_4'=>'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+        // Buscar el pedido
+        $pedido = pedidos::find($pedido_id);
+        if (!$pedido) {
+            return response()->json(['error' => 'Pedido no encontrado'], 404);
+        }
+        // Verificar si el pedido ya ha sido finalizado
+        $pedidoFinalizado = pedidoTrasportista::where('id_pedido', $pedido_id)->first();
+        $pedido->estado_pedido = 'finalizado';
+        $pedido->save();
+        if ($pedidoFinalizado) {
+            $pedidoTrasportista = pedidoTrasportista::find($pedidoFinalizado->id);
+            $pedidoTrasportista->estado = 'finalizado';
+            $pedidoTrasportista->fotos_de_mercancia = $request->fotos_de_mercancia->store('fotos_de_mercancia');
+            $pedidoTrasportista->fotos_de_mercancia_1 = $request->fotos_de_mercancia_1->store('fotos_de_mercancia');
+            $pedidoTrasportista->fotos_de_mercancia_2 = $request->fotos_de_mercancia_2->store('fotos_de_mercancia');
+            $pedidoTrasportista->fotos_de_mercancia_3 = $request->fotos_de_mercancia_3->store('fotos_de_mercancia');
+            $pedidoTrasportista->fotos_de_mercancia_4 = $request->fotos_de_mercancia_4->store('fotos_de_mercancia');
+            $pedidoTrasportista->save();
+            return response()->json(['message' => 'Pedido finalizado'], 200);
+        } else {
+            return response()->json(['error' => 'No se pudo finalizar el pedido'], 500);
+        }
     }
 }
