@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company\Company;
+use App\Models\pedido\pedidos;
 use Illuminate\Http\Request;
 use App\Models\Invitation\Invitation;
 use App\Mail\InvitationMail;
@@ -38,32 +39,36 @@ class ManagerController extends Controller
             return view('manager/no_company');
         }
 
-        // Suponiendo que ya tienes estas funciones implementadas en algún servicio o modelo
-        // $dashboardData = [
-        //     'unidades' => \App\Models\Unit::where('company_id', $companyId)->count(),
-        //     'transportistas' => \App\Models\User::where('company_id', $companyId)->where('role', 'driver')->count(),
-        //     'entregasCompletas' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'completado')->count(),
-        //     'entregasEnProceso' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'en_proceso')->count(),
-        // ];
-        $dashboardData = [
-            'unidades' => $user->company ? $user->company->units()->count() : 0,
-            'transportistas' => $user->company ? $user->company->dealers()->count() : 0,
-            'entregasCompletas' => $user->company ? $user->company->deliveries()->where('status', 'completed')->count() : 0,
-            'entregasEnProceso' => $user->company ? $user->company->deliveries()->where('status', 'pending')->count() : 0,
-        ];
-
-        return view('manager/dashboard', compact('dashboardData', 'company'));
-
+$dashboardData = [
+    'transportistas' => $user->company ? $user->company->dealers()->count() : 0,
+    'cargas' => pedidos::where('id_company', $companyId)->count(),
+    'entregasCompletadas' => pedidos::where('id_company', $companyId)
+        ->where('estado_pedido', 'entregado')
+        ->count(),
+    'entregasEnProceso' => pedidos::where('id_company', $companyId)
+        ->where('estado_pedido', 'en_proceso')
+        ->count(),
+    'nuevosUsuarios' => \App\Models\User::where('company_id', $companyId)
+        ->whereDate('created_at', '>=', now()->subDays(7)) // Ejemplo últimos 7 días
+        ->count(),
+];
+        return view('manager.dashboard', [
+            'user' => $user,
+            'company' => $company,
+            'dashboardData' => $dashboardData,
+        ]);
     }
-    public function register(Request $request){
+
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-              'name' => 'required|string|max:255',
-              'email' => 'required|string|email|max:255|unique:users',
-              'password' => 'required|string|min:8|confirmed',
-              'phone' => 'required|string|max:10'
-  
-          ]);
-          if ($validator->fails()) {
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'phone' => 'required|string|max:10'
+        ]);
+
+        if ($validator->fails()) {
               return response()->json([
                   'message' => 'Errores de validación.',
                   'errors' => $validator->errors()
@@ -82,12 +87,12 @@ class ManagerController extends Controller
         $cliente->code = $code;
         $cliente->save();
 
-        try {
-            Mail::to($cliente->email)->send(new CodeVerificationMail($cliente));
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al enviar el correo electrónico.',
-        'error' => $e->getMessage()], 500);
-        }
+        // try {
+        //     Mail::to($cliente->email)->send(new CodeVerificationMail($cliente));
+        // } catch (\Exception $e) {
+        //     return response()->json(['message' => 'Error al enviar el correo electrónico.',
+        // 'error' => $e->getMessage()], 500);
+        // }
 
 
   

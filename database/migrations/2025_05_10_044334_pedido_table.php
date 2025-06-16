@@ -104,7 +104,7 @@ return new class extends Migration
             $table->timestamp('asignado_en')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamps();
 
-            $table->foreign('pedido_transportista_id')->references('id')->on('pedidos')->onDelete('cascade');;
+//            $table->foreign('pedido_transportista_id')->references('id')->on('pedidos')->onDelete('cascade');;
             // Relación con la tabla pedido_transportista
         });
 

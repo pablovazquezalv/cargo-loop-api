@@ -34,7 +34,7 @@ class AdminController extends Controller
         //     'entregasCompletas' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'completado')->count(),
         //     'entregasEnProceso' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'en_proceso')->count(),
         // ];
-        $repartidores = Dealer::all() ?? collect();
+        $repartidores = Dealer::where('rol_id', '3')->get() ?? collect();
         $empresas = Company::all() ?? collect();
         // Obtener los usuarios que se registraron hoy, excluyendo los administradores
         $nuevosUsuarios = User::where('rol_id', '!=', '1') // Excluir administradores
@@ -51,7 +51,7 @@ class AdminController extends Controller
 
     public function verRepartidores()
 {
-    $repartidores = Dealer::all() ?? collect();
+    $repartidores = User::where('rol_id', '3')->get() ?? collect();
 
 
     return view('admin.dealers', compact('repartidores'));
