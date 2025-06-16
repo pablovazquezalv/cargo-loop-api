@@ -31,6 +31,7 @@ Route::prefix('client')->group(function () {
     Route::get('/', [ClientController::class, 'index']); // Listar clientes
     Route::post('/loginWithMail', [ClientController::class, 'loginWithMail']); // Iniciar sesión con teléfono
     Route::post("/register", [ClientController::class, "register"]);
+    Route::post('/logout', [ClientController::class, 'logout']); // Cerrar sesión
     Route::get('/{id}', [ClientController::class, 'show']); // Mostrar cliente
     Route::put('/{id}', [ClientController::class, 'update']); // Actualizar cliente
     Route::delete('/{id}', [ClientController::class, 'destroy']); // Eliminar cliente
@@ -68,7 +69,7 @@ Route::prefix('manager')->group(function () {
     Route::post('/invitations', [ManagerController::class, 'createInvitationCode'])->middleware('auth:sanctum')->name('invite'); // Enviar invitación
   
     //forgetPassword
-    Route::post('/forgetPassword', [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña
+    Route::post('/forgetPassword', action: [ManagerController::class, 'forgetPassword']); // Olvidé mi contraseña
     Route::get('/resetPassword', [ManagerController::class, 'verifyCodeView'])->name('reset.password.view'); // Restablecer contraseña
     Route::post('/resetPassword/{id}', [ManagerController::class, 'resetPassword'])->name('reset.password'); // Restablecer contraseña
 });

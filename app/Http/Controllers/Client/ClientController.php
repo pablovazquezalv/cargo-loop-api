@@ -81,13 +81,24 @@ class ClientController extends Controller
         {
             $token = $user->createToken('token')->plainTextToken;
 
-            return response()->json(['message' => 'Autenticación exitosa.', 'token' => $token]);
-            
-        }
-        return response()->json(['message' => 'Cliente no encontrado.'], 404);
-       
+            return response()->json(['message' => 'Autenticación exitosa.', 'token' => $token,
+        $user->only(['id', 'name', 'email', 'phone', 'rol_id'])
+        ]);
+    }
+    return response()->json(['message' => 'Cliente no encontrado.'], 404);
     }
 
+    public function logout(Request $request)
+    {
+       #tomar el token del usuario autenticado
+        $user = $request->user();
+        if ($user) {
+            // Revocar el token del usuario
+            $user->tokens()->delete();
+            return response()->json(['message' => 'Sesión cerrada exitosamente.']);
+        }
+        return response()->json(['message' => 'Usuario no autenticado.'], 401);
+    }
     /**
      * Verificar el código y generar un token.
      */
@@ -150,7 +161,7 @@ class ClientController extends Controller
             'mensaje' => 'required|string',
         ]);
         Mail::raw($validator['mensaje'], function ($message) use ($validator) {
-            $message->to('tucorreo@dominio.com') // cambia por tu correo real
+            $message->to('no-reply@mx.cargo-loop.com') // cambia por tu correo real
                     ->subject('Nuevo mensaje de contacto')
                     ->from($validator['email']);
         });

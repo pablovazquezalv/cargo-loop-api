@@ -20,5 +20,10 @@ class Company extends Model
         'postal_code',
     ];
 
+    public function company()
+{
+    return $this->belongsTo(Company::class);
+}
+
   
 }

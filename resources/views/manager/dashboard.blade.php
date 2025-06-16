@@ -39,6 +39,27 @@
       @endforeach
     </div>
   </div>
+  @if($company)
+  <div class="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto mt-8 flex items-center space-x-6">
+    @if($company->profile_picture)
+      <img src="{{ asset('storage/' . $company->profile_picture) }}" alt="Logo" class="w-24 h-24 object-cover rounded-full">
+    @else
+      <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold text-white">
+        {{ strtoupper(substr($company->name, 0, 1)) }}
+      </div>
+    @endif
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800">{{ $company->name }}</h2>
+      @if($company->business_name)<p class="text-gray-500">{{ $company->business_name }}</p>@endif
+      <p class="text-gray-700">{{ $company->email }}</p>
+      <p class="text-gray-700">{{ $company->phone }}</p>
+      <p class="text-gray-700">{{ $company->address }}, {{ $company->city }}, {{ $company->state }}, {{ $company->country }} - {{ $company->postal_code }}</p>
+      @if($company->website)<a href="{{ $company->website }}" target="_blank" class="text-blue-600 hover:underline">{{ $company->website }}</a>@endif
+      @if($company->description)<p class="mt-2 text-gray-600 italic">{{ $company->description }}</p>@endif
+    </div>
+  </div>
+@endif
+
 
   {{-- ✅ Modal --}}
   <div id="invitationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">

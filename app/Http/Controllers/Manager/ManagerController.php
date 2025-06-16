@@ -31,6 +31,8 @@ class ManagerController extends Controller
         }
 
         $companyId = $user->company_id; // puede ser null
+        $company = $user->company;
+
 
         if ($companyId === null) {
             return view('manager/no_company');
@@ -50,7 +52,8 @@ class ManagerController extends Controller
             'entregasEnProceso' => $user->company ? $user->company->deliveries()->where('status', 'pending')->count() : 0,
         ];
 
-        return view('manager/dashboard', compact('dashboardData'));
+        return view('manager/dashboard', compact('dashboardData', 'company'));
+
     }
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
@@ -91,8 +94,9 @@ class ManagerController extends Controller
           if (!$cliente->save()) {
               return response()->json(['message' => 'Error al crear el cliente.'], 500);
           }
-          return response()->json(['message' => 'Cliente creado exitosamente.', 'data' => $cliente], 201);
-  
+         #mandar a vista login con exito
+          return redirect()->route('login')
+          ->with('success', 'Usuario creado exitosamente. Por favor, verifica tu correo electrónico para activar tu cuenta.');
     }
   
     //showRegistrationForm
@@ -134,7 +138,7 @@ class ManagerController extends Controller
 
         //Validar los datos de la empresa
         $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:255|unique:companies,name',
         'business_name' => 'nullable|string|max:255',
         'email' => 'required|string|email|max:255|unique:companies,email',
         'phone' => 'nullable|string|max:15',
@@ -156,25 +160,28 @@ class ManagerController extends Controller
             ->withInput();
         }
         //Crear la empresa
-        $company = new Company();
-        $company->name = $request->name;
-        $company->business_name = $request->business_name;
-        $company->email = $request->email;
-        $company->phone = $request->phone;
-        $company->address = $request->address;
-        $company->city = $request->city;
-        $company->state = $request->state;
-        $company->country = $request->country;
-        $company->postal_code = $request->postal_code;
-        $company->profile_picture = $request->profile_picture;
-        $company->website = $request->website;
-        $company->description = $request->description;
-     
-        if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('companies', 'public');
-            $company->profile_picture = $imagePath;
-        }
-        $company->save();
+       // Crear la empresa
+$company = new Company();
+$company->name = $request->name;
+$company->business_name = $request->business_name;
+$company->email = $request->email;
+$company->phone = $request->phone;
+$company->address = $request->address;
+$company->city = $request->city;
+$company->state = $request->state;
+$company->country = $request->country;
+$company->postal_code = $request->postal_code;
+$company->website = $request->website;
+$company->description = $request->description;
+
+// Solo si hay archivo, se guarda y se asigna el path
+if ($request->hasFile('profile_picture')) {
+    $imagePath = $request->file('profile_picture')->store('companies', 'public');
+    $company->profile_picture = $imagePath;
+}
+
+$company->save();
+
 
         // Asignar la empresa al usuario
         $user = Manager::find($userId);
@@ -259,7 +266,15 @@ class ManagerController extends Controller
 
             }
 
-            if($user->id === 2)
+          #si usuario es diferente de 1
+            if($user->id !== 1)
+            {
+                // Si el usuario es un manager o cliente, redirigir al dashboard del manager
+                Auth::login($user);
+                $token = $user->createToken('token')->plainTextToken;
+
+                return redirect()->route('dashboard'); // 👈 Cambia a la ruta de tu panel
+            }
             {
                 Auth::login($user);
                 $token = $user->createToken('token')->plainTextToken;
@@ -297,7 +312,10 @@ class ManagerController extends Controller
         $user = Manager::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado.'], 404);
+            return redirect()->back()
+            ->with('error', 'Usuario no encontrado.')
+        
+            ->withInput();
         }
 
         // Generar un nuevo token de restablecimiento de contraseña
@@ -316,11 +334,14 @@ class ManagerController extends Controller
         try {
             Mail::to($user->email)->send(new ResetPasswordMail($user, $url));
 
-            return response()->json(['message' => 'Correo electrónico de restablecimiento de contraseña enviado exitosamente.'], 200);
+            return redirect()->back()
+            ->with('success', 'Se ha enviado un enlace de restablecimiento de contraseña a tu correo electrónico.')
+            ->withInput();
         } catch (\Exception $e) {
 
-            return response()->json(['message' => 'Error al enviar el correo electrónico.',
-        'error' => $e->getMessage()], 500);
+            return redirect()->back()
+            ->with('error', 'Error al enviar el correo electrónico: ' . $e->getMessage())
+            ->withInput();
         
         }
       
@@ -420,6 +441,19 @@ class ManagerController extends Controller
         } else {
             return response()->json(['message' => 'El usuario no tiene company_id.'], 200);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            // Revocar el token del usuario
+            
+            return redirect('/login')->with('success', 'Sesión cerrada exitosamente.');
+        }
+
+        return redirect('/login')->with('error', 'Usuario no autenticado.');
     }
 
 

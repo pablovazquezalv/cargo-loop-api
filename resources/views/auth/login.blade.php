@@ -78,40 +78,54 @@
         <p class="text-center text-gray-600 mt-4">
             ¿No tienes cuenta? <a href="{{ route('register') }}" class="text-blue-800 hover:underline">Crear cuenta</a>
         </p>
-    </div>
+    </div><!-- ...el resto de tu head y body como ya lo tienes -->
 
-    {{-- Modal de recuperación --}}
-    {{-- <div id="modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
-            <h2 class="text-lg font-semibold mb-4">Recuperar contraseña</h2>
-            <p class="mb-4 text-sm text-gray-700">
-                Ingresa tu correo y te enviaremos instrucciones para recuperar tu contraseña.
-            </p>
-            <form action="{{ route('password.email') }}" method="POST">
-                @csrf
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Tu correo"
-                    class="w-full mb-4 p-2 border rounded"
-                    required
-                />
-                <div class="flex justify-end gap-2">
-                    <button
-                        type="button"
-                        onclick="document.getElementById('modal').classList.add('hidden')"
-                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                    >
-                        Cancelar
-                    </button>
-                    <button
-                        type="submit"
-                        class="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900"
-                    >
-                        Enviar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div> --}}
+<!-- Modal de recuperación -->
+<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-sm relative animate-fadeIn">
+    <h2 class="text-lg font-semibold mb-4">Recuperar contraseña</h2>
+    <p class="mb-4 text-sm text-gray-700">
+      Ingresa tu correo y te enviaremos instrucciones para recuperar tu contraseña.
+    </p>
+    <form action="{{ route('password.email') }}" method="POST">
+      @csrf
+      <input
+        type="email"
+        name="email"
+        placeholder="Tu correo"
+        class="w-full mb-4 p-2 border rounded"
+        required
+      />
+      <div class="flex justify-end gap-2">
+        <button
+          type="button"
+          onclick="document.getElementById('modal').classList.add('hidden')"
+          class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-900"
+        >
+          Enviar
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
+
+<!-- JS opcional para cerrar con ESC o fuera del modal -->
+<script>
+  const modal = document.getElementById('modal');
+
+  // Cerrar al presionar ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') modal.classList.add('hidden');
+  });
+
+  // Cerrar al hacer clic fuera del modal
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+</script>

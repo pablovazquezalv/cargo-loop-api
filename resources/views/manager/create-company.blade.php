@@ -44,12 +44,12 @@
             ['id' => 'business_name', 'label' => 'Razón Social', 'type' => 'text'],
             ['id' => 'email', 'label' => 'Email', 'type' => 'email', 'required' => true],
             ['id' => 'phone', 'label' => 'Teléfono', 'type' => 'text'],
+                        ['id' => 'website', 'label' => 'Sitio Web', 'type' => 'url'],
+
             ['id' => 'address', 'label' => 'Dirección', 'type' => 'text'],
             ['id' => 'city', 'label' => 'Ciudad', 'type' => 'text'],
-            ['id' => 'state', 'label' => 'Estado', 'type' => 'text'],
-            ['id' => 'country', 'label' => 'País', 'type' => 'text'],
+            // OMITIMOS 'state' AQUÍ
             ['id' => 'postal_code', 'label' => 'Código Postal', 'type' => 'text'],
-            ['id' => 'website', 'label' => 'Sitio Web', 'type' => 'url'],
         ] as $field)
             <label for="{{ $field['id'] }}" class="block mb-4">
                 <span class="text-gray-700">{{ $field['label'] }}</span>
@@ -66,6 +66,33 @@
                 @enderror
             </label>
         @endforeach
+
+        {{-- Select de estados de México --}}
+        <label for="state" class="block mb-4">
+            <span class="text-gray-700">Estado</span>
+            <select
+                id="state"
+                name="state"
+                class="w-full mt-2 p-3 border rounded focus:outline-none focus:ring focus:ring-blue-200"
+                required
+            >
+                <option value="">Selecciona un estado</option>
+                @foreach([
+                    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas',
+                    'Chihuahua', 'Ciudad de México', 'Coahuila', 'Colima', 'Durango',
+                    'Estado de México', 'Guanajuato', 'Guerrero', 'Hidalgo', 'Jalisco',
+                    'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca',
+                    'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa',
+                    'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz',
+                    'Yucatán', 'Zacatecas'
+                ] as $estado)
+                    <option value="{{ $estado }}" @if(old('state') == $estado) selected @endif>{{ $estado }}</option>
+                @endforeach
+            </select>
+            @error('state')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </label>
 
         <label class="block mb-4">
             <span class="text-gray-700">Imagen de Perfil</span>
