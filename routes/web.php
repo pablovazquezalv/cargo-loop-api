@@ -15,6 +15,10 @@ Route::get('/login', [ManagerController::class, 'showLoginForm'])->name('login')
 Route::post('/login', [ManagerController::class, 'loginWithMail'])->name('login.attempt');
 Route::get('/dashboard', [ManagerController::class, 'index'])->name('dashboard');
 Route::get('/dashboard-admin',[AdminController::class, 'index'])->name('dashboard-admin');;
+// routes/web.php
+Route::get('/repartidores-admin', [AdminController::class, 'verRepartidores'])->name('repartidores');
+Route::get('/usuarios-admin', [AdminController::class, 'verUsuarios'])->name('usuarios');
+Route::get('/empresas-admin', [AdminController::class, 'verEmpresas'])->name('empresas');
 Route::post('/logout', [ManagerController::class, 'logout'])->name('logout');
 
 Route::get('/manager/create-company', [ManagerController::class, 'showCreateForm'])->name('manager.createForm');

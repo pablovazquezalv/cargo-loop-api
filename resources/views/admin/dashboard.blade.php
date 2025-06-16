@@ -18,16 +18,34 @@
       <div class="bg-white shadow-md rounded-lg p-6 text-center">
         <div class="text-4xl text-blue-700">{{ count($nuevosUsuarios ?? []) }}</div>
         <div class="text-gray-600">Usuarios Nuevos</div>
+           <a href="{{ route('repartidores') }}"
+     class="mt-4 inline-block text-sm text-blue-700 hover:underline">
+    Ver detalles
+  </a>
       </div>
-      <div class="bg-white shadow-md rounded-lg p-6 text-center">
-        <div class="text-4xl text-green-700">{{ count($invitaciones ?? []) }}</div>
-        <div class="text-gray-600">Invitaciones Enviadas</div>
-      </div>
+    
       <div class="bg-white shadow-md rounded-lg p-6 text-center">
         <div class="text-4xl text-purple-700">{{ count($repartidores ?? []) }}</div>
         <div class="text-gray-600">Repartidores</div>
+         <a href="{{ route('repartidores') }}"
+     class="mt-4 inline-block text-sm text-blue-700 hover:underline">
+    Ver detalles
+  </a>
       </div>
+       <div class="bg-white shadow-md rounded-lg p-6 text-center">
+        <div class="text-4xl text-purple-700">{{ count($empresas ?? []) }}</div>
+        <div class="text-gray-600">Empresas </div>
+         <a href="{{ route('empresas') }}"
+     class="mt-4 inline-block text-sm text-blue-700 hover:underline">
+    Ver detalles
+  </a>
+      </div>
+
+
+
+
     </div>
+    
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       {{-- Usuarios Nuevos --}}
@@ -42,19 +60,7 @@
         </ul>
       </div>
 
-      {{-- Invitaciones --}}
-      <div>
-        <h2 class="text-xl font-semibold mb-4">Invitaciones</h2>
-        <ul class="bg-white rounded shadow divide-y divide-gray-200">
-          @forelse ($invitaciones ?? [] as $inv)
-            <li class="p-4">
-              {{ $inv->email }} — <span class="text-sm text-gray-500">Enviada: {{ $inv->created_at->format('d/m/Y') }}</span>
-            </li>
-          @empty
-            <li class="p-4 text-gray-500">No hay invitaciones aún.</li>
-          @endforelse
-        </ul>
-      </div>
+    
 
       {{-- Repartidores --}}
       <div>

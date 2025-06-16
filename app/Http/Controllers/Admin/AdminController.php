@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Company\Company;
+use App\Models\Roles\Rol;
 use App\Models\Invitation\Invitation;
 
 use App\Models\Trasportista\Dealer;
@@ -32,22 +34,41 @@ class AdminController extends Controller
         //     'entregasCompletas' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'completado')->count(),
         //     'entregasEnProceso' => \App\Models\Delivery::where('company_id', $companyId)->where('status', 'en_proceso')->count(),
         // ];
-        $dashboardData = [
-            'unidades' => $user->company ? $user->company->units()->count() : 0,
-            'transportistas' => $user->company ? $user->company->dealers()->count() : 0,
-            'entregasCompletas' => $user->company ? $user->company->deliveries()->where('status', 'completed')->count() : 0,
-            'entregasEnProceso' => $user->company ? $user->company->deliveries()->where('status', 'pending')->count() : 0,
-        ];
-
-        return view('admin/dashboard', compact('dashboardData'));
-    }
-    public function showDashboardAdmin()
-    {
-        $nuevosUsuarios = User::whereDate('created_at', today())->get() ?? collect();
-        $invitaciones = Invitation::latest()->take(10)->get() ?? collect();
         $repartidores = Dealer::all() ?? collect();
-    
-        return view('admin.dashboard', compact('nuevosUsuarios', 'invitaciones', 'repartidores'));
+        $empresas = Company::all() ?? collect();
+        // Obtener los usuarios que se registraron hoy, excluyendo los administradores
+        $nuevosUsuarios = User::where('rol_id', '!=', '1') // Excluir administradores
+            ->get() ?? collect();
+        // Renderizar la vista del dashboard con los datos obtenidos
+        return view('admin.dashboard', compact('nuevosUsuarios', 'repartidores', 'empresas'));
     }
-    
+    // // public function showDashboardAdmin()
+    // // {
+    // //     //$nuevosUsuarios = User::whereDate('created_at', today())->get() ?? collect();
+      
+    // //     return view('admin.dashboard', compact('nuevosUsuarios', 'repartidores'));
+    // // }
+
+    public function verRepartidores()
+{
+    $repartidores = Dealer::all() ?? collect();
+
+
+    return view('admin.dealers', compact('repartidores'));
+}
+
+public function verUsuarios()
+{
+    $usuarios = User::where('rol_id', '!=', '1')->get() ?? collect();
+
+    return view('admin.users', compact('usuarios'));
+}
+
+public function verEmpresas()
+{
+    $empresas = Company::all() ?? collect();
+
+    return view('admin.empresas', compact('empresas'));
+}
+
 }
