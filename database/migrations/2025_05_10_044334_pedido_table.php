@@ -36,7 +36,7 @@ return new class extends Migration
 
             // 🚗 Vehículo
             $table->string('tipo_de_vehiculo'); // Moto, coche, camión, etc.
-            $table->string('tipo_unidad'); // Unidad específica
+            // $table->string('tipo_unidad'); // Unidad específica
 
             // 💳 Pago
             $table->string('tipo_de_pago'); // Efectivo, tarjeta, etc.
@@ -47,6 +47,10 @@ return new class extends Migration
             $table->double('ubicacion_recoger_lat' );
             $table->double('ubicacion_recoger_long');
             $table->string('ubicacion_recoger_descripcion');
+
+            // 🏠   Ubicacion Trasportista
+            $table->double('ubicacion_transportista_lat')->nullable();
+            $table->double('ubicacion_transportista_long')->nullable();
 
             // 🏠 Ubicación - Entregar
             $table->double('ubicacion_entregar_lat');
@@ -131,10 +135,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pedidos');
+       
         Schema::dropIfExists('liberacion_pedidos');
         Schema::dropIfExists('comprobante_pedido');
         Schema::dropIfExists('pedido_transportista');
+         Schema::dropIfExists('pedidos');
        
     }
 };

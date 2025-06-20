@@ -336,7 +336,7 @@ class DealerController extends Controller
         $validator = Validator::make($request->all(), [
             'latitude' =>'required',
             'longitude' =>'required',
-            'email' =>'required'
+            'idPedido' =>'required'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -345,14 +345,17 @@ class DealerController extends Controller
             ], 422);
 
         }
-        $dealer = Dealer::where('email', $request->email)->firstOrFail();
-        $dealer->latitude = $request->latitude;
-        $dealer->longitude = $request->longitude;
-        $dealer->save();
-        return response()->json([
-            'message' => 'Ubicación actualizada exitosamente.',
-            'data' => $dealer
-        ]);
+        $pedido = DB::table('pedidos')
+            ->where('id', $request->idPedido)
+            ->first();
+        if (!$pedido) {
+            return response()->json(['message' => 'Pedido no encontrado'], 404);
+        }
+        $pedido->ubicacion_transportista_lat = $request->latitude;
+        $pedido->ubicacion_transportista_long = $request->longitude;
+        $pedido->save();
+        return response()->json(['message' => 'Ubicación actualizada correctamente', 'data' => $pedido], 200);
+        
     }
 
 

@@ -19,7 +19,7 @@ class PedidoController extends Controller
              'fecha_carga' => 'required|date',
             // 'lugar_origen' => 'required|string',
             // 'lugar_destino' => 'required|string',
-             'tipo_unidad' => 'required|string',
+            //  'tipo_unidad' => 'required|string',
             
              'descripcion_carga' => 'nullable|string',
              'especificacion_carga' => 'nullable|string',
@@ -64,7 +64,7 @@ class PedidoController extends Controller
         $pedido->nombre_contacto = $request->nombre_contacto;
         $pedido->tipo_de_pago = $request->tipo_de_pago;
          $pedido->fecha_carga = $request->fecha_carga;
-         $pedido->tipo_unidad = $request->tipo_unidad;
+        //  $pedido->tipo_unidad = $request->tipo_unidad;
          $pedido->cantidad = $request->cantidad;
          $pedido->tipo_de_material = $request->tipo_de_material;
          $pedido->descripcion_carga = $request->descripcion_carga;
@@ -143,10 +143,10 @@ class PedidoController extends Controller
         $pedido->id_repartidor = $request->id_user;
         $pedido->estado_pedido = 'aceptado';
         $pedido->save();
-        $pedidoTrasportista = DB::table('pedido_trasportista')->insert([
-            'id_pedido' => $pedido_id,
-            'id_user' => $request->id_user,
-            'estado' => 'aceptado',
+        $pedidoTrasportista = DB::table('pedido_transportista')->insert([
+            'pedido_id' => $pedido_id,
+            'transportista_id' => $request->id_user,
+            'estado_asignacion' => 'aceptado',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -205,6 +205,36 @@ class PedidoController extends Controller
         return response()->json($pedidos);
     }
 
+    /**
+     * Finalizar un pedido
+     *
+     * @param int $pedido_id
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+        public function pedidoenProceso($pedido_id, Request $request)
+        {
+            $validator = Validator::make($request->all(), [
+                'id_user' => 'required|integer'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 422);
+            }
+
+            // Buscar el pedido
+            $pedido = pedidos::find($pedido_id);
+
+            if (!$pedido) {
+                return response()->json(['error' => 'Pedido no encontrado'], 404);
+            }
+
+            // Actualizar el estado del pedido
+            $pedido->estado_pedido = 'en_proceso';
+            $pedido->save();
+
+            return response()->json(['message' => 'Pedido en proceso'], 200);
+        }
 
   public function finalizarPedido($pedido_id, Request $request)
     {

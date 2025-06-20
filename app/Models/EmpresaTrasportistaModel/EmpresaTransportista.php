@@ -19,8 +19,5 @@ class EmpresaTransportista extends Model
         'expires_at',
     ];
 
-    public function userTransportista()
-    {
-        return $this->belongsTo(UserTrasportista::class, 'user_id');
-    }
+    
 }

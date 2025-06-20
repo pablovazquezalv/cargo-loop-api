@@ -1,3 +1,4 @@
+<?php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +12,8 @@ class Carga extends Model
         'aplica_seguro', 'observaciones', 'tipo_industria', 'requerimiento_carga',
         'seguro_carga', 'cartaporte'
     ];
-    public function transportistas() {
-        return $this->belongsToMany(Transportista::class, 'carga_transportista', 'pedido_id', 'transportista_id')
-            ->withPivot('asignado_en', 'estado_asignacion')->withTimestamps();
-    }
+    // public function transportistas() {
+    //     return $this->belongsToMany(Transportista::class, 'carga_transportista', 'pedido_id', 'transportista_id')
+    //         ->withPivot('asignado_en', 'estado_asignacion')->withTimestamps();
+    // }
 }
