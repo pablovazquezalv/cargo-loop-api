@@ -74,7 +74,7 @@ class PedidoController extends Controller
          $pedido->observaciones = $request->observaciones;
          $pedido->seguro_carga = $request->seguro_carga;
          $pedido->cartaporte = $request->cartaporte;
-         $pedido->estado_pedido = $request->estado_pedido ?? 'disponible';
+         $pedido->estado_pedido = 'disponible';
          $pedido->id_company = $request->id_company;
          $pedido->cliente_id = $request->cliente_id;
          $pedido->tipo_de_vehiculo = $request->tipo_De_vehiculo;
