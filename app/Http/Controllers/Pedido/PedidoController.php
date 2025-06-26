@@ -120,7 +120,6 @@ class PedidoController extends Controller
 
 
 
-
     public function aceptarPedido($pedido_id, Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -213,64 +212,137 @@ class PedidoController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-        public function pedidoenProceso($pedido_id, Request $request)
-        {
-            $validator = Validator::make($request->all(), [
-                'id_user' => 'required|integer'
-            ]);
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 422);
-            }
+       public function pedidoenProceso($pedido_id, Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'fotos_de_mercancia' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'fotos_de_mercancia_1' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'fotos_de_mercancia_2' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'fotos_de_mercancia_3' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'fotos_de_mercancia_4' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'foto_de_factura' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'cantidad'=> 'required|integer',
+    ]);
 
-            // Buscar el pedido
-            $pedido = pedidos::find($pedido_id);
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 422);
+    }
 
-            if (!$pedido) {
-                return response()->json(['error' => 'Pedido no encontrado'], 404);
-            }
+    // Buscar el pedido
+    $pedido = pedidos::find($pedido_id);
 
-            // Actualizar el estado del pedido
-            $pedido->estado_pedido = 'en_proceso';
-            $pedido->save();
+    if (!$pedido) {
+        return response()->json(['error' => 'Pedido no encontrado'], 404);
+    }
 
-            return response()->json(['message' => 'Pedido en proceso'], 200);
-        }
+    // Actualizar el estado del pedido
+    $pedido->estado_pedido = 'en_proceso';
+    $pedido->save();
+
+    // Guardar las URLs públicas
+    $url_foto_1 = asset('storage/' . $request->file('fotos_de_mercancia')->store('fotos_de_mercancia', 'public'));
+    $url_foto_2 = asset('storage/' . $request->file('fotos_de_mercancia_1')->store('fotos_de_mercancia', 'public'));
+    $url_foto_3 = asset('storage/' . $request->file('fotos_de_mercancia_2')->store('fotos_de_mercancia', 'public'));
+    $url_foto_4 = asset('storage/' . $request->file('fotos_de_mercancia_3')->store('fotos_de_mercancia', 'public'));
+    $url_foto_5 = asset('storage/' . $request->file('fotos_de_mercancia_4')->store('fotos_de_mercancia', 'public'));
+    $url_factura = asset('storage/' . $request->file('foto_de_factura')->store('foto_de_factura', 'public'));
+    $pedidoenProceso = DB::table('pedido_transportista')->where('pedido_id', $pedido_id)
+        ->first();
+    if (!$pedidoenProceso) {
+        return response()->json(['error' => 'Pedido no encontrado para el transportista'], 404);
+    }   
+    // Actualizar el estado del pedido en la tabla pedido_transportista
+    $pedidoenProceso = DB::table('pedido_transportista')->where('pedido_id', $pedido_id)
+        ->update([
+            'estado_asignacion' => 'en_proceso'
+        ]);
+    // Guardar en la tabla comprobante_pedido
+    $comprobantePedido = DB::table('comprobante_pedido')->insert([
+        'id_pedido' => $pedido_id,
+        'fotos_de_mercancia' => $url_foto_1,
+        'fotos_de_mercancia_1' => $url_foto_2,
+        'fotos_de_mercancia_2' => $url_foto_3,
+        'fotos_de_mercancia_3' => $url_foto_4,
+        'fotos_de_mercancia_4' => $url_foto_5,
+        'foto_de_factura' => $url_factura,
+        'cantidad'=> $request->cantidad,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    if (!$comprobantePedido) {
+        return response()->json(['error' => 'No se pudo actualizar el pedido'], 500);
+    }
+
+    return response()->json(['message' => 'Pedido en proceso'], 200);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   public function finalizarPedido($pedido_id, Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id_user' =>'required|integer',
-            'fotos_de_mercancia' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'fotos_de_mercancia_1'=> 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'fotos_de_mercancia_2'=>'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'fotos_de_mercancia_3'=>'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'fotos_de_mercancia_4'=>'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+{
+    $validator = Validator::make($request->all(), [
+        
+        'fotos_de_entrega' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'firma_del_transportista' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        'firma_del_cliente' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+    ]);
 
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-        // Buscar el pedido
-        $pedido = pedidos::find($pedido_id);
-        if (!$pedido) {
-            return response()->json(['error' => 'Pedido no encontrado'], 404);
-        }
-        // Verificar si el pedido ya ha sido finalizado
-        $pedidoFinalizado = pedidoTrasportista::where('id_pedido', $pedido_id)->first();
-        $pedido->estado_pedido = 'finalizado';
-        $pedido->save();
-        if ($pedidoFinalizado) {
-            $pedidoTrasportista = pedidoTrasportista::find($pedidoFinalizado->id);
-            $pedidoTrasportista->estado = 'finalizado';
-            $pedidoTrasportista->fotos_de_mercancia = $request->fotos_de_mercancia->store('fotos_de_mercancia');
-            $pedidoTrasportista->fotos_de_mercancia_1 = $request->fotos_de_mercancia_1->store('fotos_de_mercancia');
-            $pedidoTrasportista->fotos_de_mercancia_2 = $request->fotos_de_mercancia_2->store('fotos_de_mercancia');
-            $pedidoTrasportista->fotos_de_mercancia_3 = $request->fotos_de_mercancia_3->store('fotos_de_mercancia');
-            $pedidoTrasportista->fotos_de_mercancia_4 = $request->fotos_de_mercancia_4->store('fotos_de_mercancia');
-            $pedidoTrasportista->save();
-            return response()->json(['message' => 'Pedido finalizado'], 200);
-        } else {
-            return response()->json(['error' => 'No se pudo finalizar el pedido'], 500);
-        }
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 422);
     }
+
+    $pedido = pedidos::find($pedido_id);
+    if (!$pedido) {
+        return response()->json(['error' => 'Pedido no encontrado'], 404);
+    }
+
+    $pedido->estado_pedido = 'finalizado';
+    $pedido->save();
+
+    $pedidoTransportista = DB::table('pedido_transportista')->where('pedido_id', $pedido_id)->first();
+    if (!$pedidoTransportista) {
+        return response()->json(['error' => 'Pedido no encontrado para el transportista'], 404);
+    }
+
+    DB::table('pedido_transportista')->where('pedido_id', $pedido_id)->update([
+        'estado_asignacion' => 'finalizado',
+    ]);
+
+    // Guardar imágenes
+    $url_foto_entrega = asset('storage/' . $request->file('fotos_de_entrega')->store('fotos_de_entrega', 'public'));
+    $url_firma_transportista = asset('storage/' . $request->file('firma_del_transportista')->store('firma_del_transportista', 'public'));
+    $url_firma_cliente = asset('storage/' . $request->file('firma_del_cliente')->store('firma_del_cliente', 'public'));
+
+    $actualizado = DB::table('comprobante_pedido')->where('id_pedido', $pedido_id)->update([
+        'foto_de_entrega' => $url_foto_entrega,
+        'firma_transportista' => $url_firma_transportista,
+        'firma_cliente' => $url_firma_cliente,
+        'updated_at' => now(),
+    ]);
+
+    if (!$actualizado) {
+        return response()->json(['error' => 'No se pudo actualizar el pedido'], 500);
+    }
+
+    return response()->json(['message' => 'Pedido finalizado correctamente.']);
+}
+
+
+
+
+
+
 }

@@ -92,25 +92,24 @@ return new class extends Migration
             // Relación con la tabla pedidos
             $table->foreign('pedido_id')->references('id')->on('pedidos')->onDelete('cascade');;
         });
-          Schema::create('comprobante_pedido', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('pedido_id');
-            $table->string('fotos_de_mercancia');
-            $table->string('fotos_de_mercancia_1');
-            $table->string('fotos_de_mercancia_2');
-            $table->string('fotos_de_mercancia_3');
-            $table->string('fotos_de_mercancia_4');
-            $table->string('foto_factura');
-            $table->string('fotos_de_entrega');
-            $table->string('firma_del_transportista');
-            $table->string('firma_del_cliente');
-            $table->integer('cantidad');
-            $table->timestamp('asignado_en')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamps();
+         Schema::create('comprobante_pedido', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('id_pedido'); // 👈 Asegúrate de incluir esta línea
+    $table->string('fotos_de_mercancia');
+    $table->string('fotos_de_mercancia_1');
+    $table->string('fotos_de_mercancia_2');
+    $table->string('fotos_de_mercancia_3');
+    $table->string('fotos_de_mercancia_4');
+    $table->string('foto_de_factura');
+    $table->string('foto_de_entrega')->nullable();
+    $table->string('firma_transportista')->nullable();
+    $table->string('firma_cliente')->nullable();
+    $table->integer('cantidad');
+    $table->timestamps();
 
-//            $table->foreign('pedido_transportista_id')->references('id')->on('pedidos')->onDelete('cascade');;
-            // Relación con la tabla pedido_transportista
-        });
+    $table->foreign('id_pedido')->references('id')->on('pedidos')->onDelete('cascade');
+});
+
 
         Schema::create('liberacion_pedidos', function (Blueprint $table) {
             $table->id();
