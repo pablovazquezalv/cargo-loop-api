@@ -341,7 +341,28 @@ class PedidoController extends Controller
 }
 
 
+public function liberarPedido($pedido_id, Request $request)
+{
+    $pedido = pedidos::find($pedido_id);
+    if (!$pedido) {
+        return response()->json(['error' => 'Pedido no encontrado'], 404);
+    }
 
+    // Liberar el pedido
+    $pedido->estado_pedido = 'disponible';
+    $pedido->id_repartidor = null; // Liberar el repartidor
+    $pedido->save();
+
+    // Actualizar el estado del repartidor a disponible
+    $pedidoTransportista = DB::table('pedido_transportista')->where('pedido_id', $pedido_id)->first();
+    if ($pedidoTransportista) {
+        DB::table('pedido_transportista')->where('pedido_id', $pedido_id)->update([
+            'estado_asignacion' => 'disponible',
+        ]);
+    }
+
+    return response()->json(['message' => 'Pedido liberado correctamente']);
+}
 
 
 
