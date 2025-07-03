@@ -357,7 +357,7 @@ public function liberarPedido($pedido_id, Request $request)
     $pedidoTransportista = DB::table('pedido_transportista')->where('pedido_id', $pedido_id)->first();
     if ($pedidoTransportista) {
         DB::table('pedido_transportista')->where('pedido_id', $pedido_id)->update([
-            'estado_asignacion' => 'disponible',
+            'estado_asignacion' => 'liberado',
         ]);
     }
 

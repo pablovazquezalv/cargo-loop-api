@@ -49,7 +49,7 @@ Route::prefix('pedido')->group(function () {
     Route::get('/cliente/{cliente_id}', [PedidoController::class, 'listarPedidosPorCliente']);
     Route::post('/aceptar/{pedido_id}', [PedidoController::class, 'aceptarPedido']);
     Route::post('/Finalizar/{pedido_id}', [PedidoController::class, 'finalizarPedido']);
-    
+    Route::delete('/liberarPedido/{pedido_id}',[PedidoController::class,'liberarPedido']);
     Route::post('/disponibles', [PedidoController::class, 'pedidosDisponibles']);
     Route::post('/enProceso/{pedido_id}', [PedidoController::class, 'pedidoenProceso']);
     Route::get('/finalizados/{id_user}',[PedidoController::class,'pedidosFinalizadosporTransportista']);
