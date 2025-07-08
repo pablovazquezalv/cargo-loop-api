@@ -92,25 +92,33 @@ class DealerController extends Controller
     
         // Guardar archivos en public y almacenar la ruta
         if ($request->hasFile('picture_license')) {
-            $file = $request->file('picture_license');
-            $filename = 'user_' . $user->id . '_licencia.' . $file->getClientOriginalExtension();
-            $user->picture_license = $file->storeAs('licencias', $filename, 'public');
-        }
-        if ($request->hasFile('photo_identification')) {
-            $file = $request->file('photo_identification');
-            $filename = 'user_' . $user->id . '_identificacion.' . $file->getClientOriginalExtension();
-            $user->photo_identification = $file->storeAs('identificaciones', $filename, 'public');
-        }
-        if ($request->hasFile('letter_of_no_criminal_record')) {
-            $file = $request->file('letter_of_no_criminal_record');
-            $filename = 'user_' . $user->id . '_no_criminal.' . $file->getClientOriginalExtension();
-            $user->letter_of_no_criminal_record = $file->storeAs('no_criminal', $filename, 'public');
-        }
-        if ($request->hasFile('proof_of_residence')) {
-            $file = $request->file('proof_of_residence');
-            $filename = 'user_' . $user->id . '_comprobante.' . $file->getClientOriginalExtension();
-            $user->proof_of_residence = $file->storeAs('proof_of_residence', $filename, 'public');
-        }
+    $file = $request->file('picture_license');
+    $filename = 'user_' . $user->id . '_licencia.' . $file->getClientOriginalExtension();
+    $path = $file->storeAs('licencias', $filename, 'public');
+    $user->picture_license = asset('storage/' . $path);
+}
+
+if ($request->hasFile('photo_identification')) {
+    $file = $request->file('photo_identification');
+    $filename = 'user_' . $user->id . '_identificacion.' . $file->getClientOriginalExtension();
+    $path = $file->storeAs('identificaciones', $filename, 'public');
+    $user->photo_identification = asset('storage/' . $path);
+}
+
+if ($request->hasFile('letter_of_no_criminal_record')) {
+    $file = $request->file('letter_of_no_criminal_record');
+    $filename = 'user_' . $user->id . '_no_criminal.' . $file->getClientOriginalExtension();
+    $path = $file->storeAs('no_criminal', $filename, 'public');
+    $user->letter_of_no_criminal_record = asset('storage/' . $path);
+}
+
+if ($request->hasFile('proof_of_residence')) {
+    $file = $request->file('proof_of_residence');
+    $filename = 'user_' . $user->id . '_comprobante.' . $file->getClientOriginalExtension();
+    $path = $file->storeAs('proof_of_residence', $filename, 'public');
+    $user->proof_of_residence = asset('storage/' . $path);
+}
+
     
         $user->rfc = $request->rfc;
         $user->type_license = $request->tipo_de_licencia_id;
