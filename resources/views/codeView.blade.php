@@ -7,6 +7,11 @@
     <title>Código de Autenticación</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <meta property="og:title" content="Carga Loop - Plataforma de Traslado de Carga" />
+  <meta property="og:description" content="Conecta con generadores de carga y optimiza tus envíos con Carga Loop. Somos un grupo de profesionales expertos en logística con más de 20 años de experiencia." />
+  <meta property="og:image" content="https://www.mx.cargo-loop.com/Carga-loop-og.png" />
+  <meta property="og:url" content="https://www.mx.cargo-loop.com" />
+  <meta property="og:type" content="website" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>

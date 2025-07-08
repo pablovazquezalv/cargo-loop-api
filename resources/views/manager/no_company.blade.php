@@ -4,7 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cargo Loop</title>
+   <meta property="og:title" content="Carga Loop - Plataforma de Traslado de Carga" />
+  <meta property="og:description" content="Conecta con generadores de carga y optimiza tus envíos con Carga Loop. Somos un grupo de profesionales expertos en logística con más de 20 años de experiencia." />
+  <meta property="og:image" content="https://www.mx.cargo-loop.com/Carga-loop-og.png" />
+  <meta property="og:url" content="https://www.mx.cargo-loop.com" />
+  <meta property="og:type" content="website" />
+  <title>Carga Loop</title>
   {{-- ✅ Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
   <style>

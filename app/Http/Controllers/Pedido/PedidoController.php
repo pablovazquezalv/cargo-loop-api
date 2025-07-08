@@ -91,11 +91,12 @@ class PedidoController extends Controller
             // $dealer->estado = 'ocupado';
             // $dealer->save();
 
-            return response()->json([
-                'message' => 'Pedido creado exitosamente',
-                'pedido_id' => $pedido->id,
-                // 'dealer_id' => $dealer->id
-            ], 201);
+            // return response()->json([
+            //     'message' => 'Pedido creado exitosamente',
+            //     'pedido_id' => $pedido->id,
+            //     // 'dealer_id' => $dealer->id
+            // ], 201);
+            return redirect()->back()->with('success', 'Pedido creado correctamente');
         }
 
         return response()->json(['error' => 'No se pudo crear el pedido'], 500);
