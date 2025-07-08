@@ -88,88 +88,169 @@
     </div>
   </div>
 
-  {{-- Modal de Pedido --}}
-  <div id="pedidoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md sm:max-w-3xl max-h-[90vh] overflow-y-auto mx-4">
-      <h2 class="text-xl font-bold mb-4">Crear nuevo pedido</h2>
-      <form method="POST" action="{{ url('api/pedido/crear') }}">
-        @csrf
+<!-- Modal de Pedido -->
+<div id="pedidoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto mx-4 animate-fade-in">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">📦 Crear Nuevo Pedido</h2>
 
-        <label>Fecha de carga</label>
-        <input type="date" name="fecha_carga" required class="w-full border rounded p-2 mb-2" />
+    <form method="POST" action="{{ url('api/pedido/crear') }}" class="space-y-4 text-gray-700">
+      @csrf
 
-        <label>Descripción de carga</label>
-        <input type="text" name="descripcion_carga" required class="w-full border rounded p-2 mb-2" />
-
-        <label>Especificación de carga</label>
-        <input type="text" name="especificacion_carga" class="w-full border rounded p-2 mb-2" />
-
-        <label>Valor de carga</label>
-        <input type="number" step="0.01" name="valor_carga" class="w-full border rounded p-2 mb-2" />
-
-        <label>¿Aplica seguro?</label>
-        <input type="checkbox" name="aplica_seguro" value="1" class="mb-2" />
-
-        <label>Observaciones</label>
-        <textarea name="observaciones" class="w-full border rounded p-2 mb-2"></textarea>
-
-        <label>Tipo de vehículo</label>
-        <input type="text" name="tipo_De_vehiculo" class="w-full border rounded p-2 mb-2" />
-
-        <label>Seguro de carga</label>
-        <input type="text" name="seguro_carga" class="w-full border rounded p-2 mb-2" />
-
-        <label>Carta porte</label>
-        <input type="text" name="cartaporte" class="w-full border rounded p-2 mb-2" />
-
-        <label>Estado del pedido</label>
-        <select name="estado_pedido" class="w-full border rounded p-2 mb-2">
-          <option value="pendiente">Pendiente</option>
-          <option value="en_proceso">En proceso</option>
-          <option value="entregado">Entregado</option>
-        </select>
-
-        <label>ID Compañía</label>
-        <input type="number" name="id_company" required class="w-full border rounded p-2 mb-2" />
-
-        <label>ID Cliente</label>
-        <input type="number" name="cliente_id" required class="w-full border rounded p-2 mb-2" />
-
-        <h4 class="font-bold mt-4">Ubicación de recolección</h4>
-        <label>Latitud</label>
-        <input type="text" name="ubicacion_recoger_lat" required class="w-full border rounded p-2 mb-2" />
-        <label>Longitud</label>
-        <input type="text" name="ubicacion_recoger_long" required class="w-full border rounded p-2 mb-2" />
-        <label>Descripción</label>
-        <input type="text" name="ubicacion_recoger_descripcion" required class="w-full border rounded p-2 mb-2" />
-
-        <h4 class="font-bold mt-4">Ubicación de entrega</h4>
-        <label>Dirección</label>
-        <input type="text" name="ubicacion_entregar_direccion" class="w-full border rounded p-2 mb-2" />
-        <label>Latitud</label>
-        <input type="text" name="ubicacion_entregar_lat" required class="w-full border rounded p-2 mb-2" />
-        <label>Longitud</label>
-        <input type="text" name="ubicacion_entregar_long" required class="w-full border rounded p-2 mb-2" />
-
-        <label>Cantidad</label>
-        <input type="number" name="cantidad" required class="w-full border rounded p-2 mb-2" />
-
-        <label>Tipo de material</label>
-        <input type="text" name="tipo_de_material" class="w-full border rounded p-2 mb-2" />
-
-        <label>Tipo de pago</label>
-        <input type="text" name="tipo_de_pago" class="w-full border rounded p-2 mb-2" />
-
-        <label>Nombre del contacto</label>
-        <input type="text" name="nombre_contacto" class="w-full border rounded p-2 mb-4" />
-
-        <div class="flex flex-col sm:flex-row justify-between gap-2">
-          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full sm:w-auto">Guardar pedido</button>
-          <button type="button" class="text-sm text-gray-500 w-full sm:w-auto" onclick="closePedidoModal()">Cancelar</button>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="font-semibold">Fecha de carga</label>
+          <input type="date" name="fecha_carga" required class="w-full border rounded-lg p-2 mt-1" />
         </div>
-      </form>
-    </div>
+
+        <div>
+          <label class="font-semibold">Valor de carga</label>
+          <input type="number" step="0.01" name="valor_carga" class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+      </div>
+
+      <div>
+        <label class="font-semibold">Descripción de carga</label>
+        <input type="text" name="descripcion_carga" required class="w-full border rounded-lg p-2 mt-1" />
+      </div>
+
+      <div>
+        <label class="font-semibold">Especificación de carga</label>
+        <input type="text" name="especificacion_carga" class="w-full border rounded-lg p-2 mt-1" />
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <input type="checkbox" name="aplica_seguro" value="1" class="rounded" />
+        <label class="font-semibold">¿Aplica seguro?</label>
+      </div>
+
+      <div>
+        <label class="font-semibold">Observaciones</label>
+        <textarea name="observaciones" rows="2" class="w-full border rounded-lg p-2 mt-1"></textarea>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="font-semibold">Tipo de vehículo</label>
+          <input type="text" name="tipo_De_vehiculo" class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+
+        <div>
+          <label class="font-semibold">Seguro de carga</label>
+          <input type="text" name="seguro_carga" class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+
+        <div>
+          <label class="font-semibold">Carta porte</label>
+          <input type="text" name="cartaporte" class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+<!-- 
+        <div>
+          <label class="font-semibold">Estado del pedido</label>
+          <select name="estado_pedido" class="w-full border rounded-lg p-2 mt-1">
+            <option value="pendiente">Pendiente</option>
+            <option value="en_proceso">En proceso</option>
+            <option value="entregado">Entregado</option>
+          </select>
+        </div>
+      </div> -->
+
+      <input type="hidden" name="estado_pedido" value="pendiente">
+      <input type="hidden" name="cliente_id" value="{{ auth()->user()->id }}">
+
+
+      <!-- <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="font-semibold">ID Compañía</label>
+          <input type="number" name="id_company" required class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+
+        <div>
+          <label class="font-semibold">ID Cliente</label>
+          <input type="number" name="cliente_id" required class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+      </div> -->
+
+      <div class="mt-6 border-t pt-4">
+        <h4 class="text-lg font-bold mb-2">📍 Ubicación de recolección</h4>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="font-semibold">Latitud</label>
+            <input type="text" name="ubicacion_recoger_lat" required class="w-full border rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label class="font-semibold">Longitud</label>
+            <input type="text" name="ubicacion_recoger_long" required class="w-full border rounded-lg p-2 mt-1" />
+          </div>
+          <div class="sm:col-span-3">
+            <label class="font-semibold">Descripción</label>
+            <input type="text" name="ubicacion_recoger_descripcion" required class="w-full border rounded-lg p-2 mt-1" />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 border-t pt-4">
+        <h4 class="text-lg font-bold mb-2">🚚 Ubicación de entrega</h4>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="sm:col-span-3">
+            <label class="font-semibold">Dirección</label>
+            <input type="text" name="ubicacion_entregar_direccion" class="w-full border rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label class="font-semibold">Latitud</label>
+            <input type="text" name="ubicacion_entregar_lat" required class="w-full border rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label class="font-semibold">Longitud</label>
+            <input type="text" name="ubicacion_entregar_long" required class="w-full border rounded-lg p-2 mt-1" />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-4 mt-6">
+        <div>
+          <label class="font-semibold">Cantidad</label>
+          <input type="number" name="cantidad" required class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+
+        <div>
+          <label class="font-semibold">Tipo de material</label>
+          <input type="text" name="tipo_de_material" class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+
+        <div>
+          <label class="font-semibold">Tipo de pago</label>
+          <input type="text" name="tipo_de_pago" class="w-full border rounded-lg p-2 mt-1" />
+        </div>
+      </div>
+
+      <div>
+        <label class="font-semibold">Nombre del contacto</label>
+        <input type="text" name="nombre_contacto" class="w-full border rounded-lg p-2 mt-1" />
+      </div>
+
+      <div class="flex flex-col sm:flex-row justify-between gap-4 mt-6">
+        <button type="submit" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold">
+          💾 Guardar pedido
+        </button>
+        <button type="button" class="w-full sm:w-auto text-gray-500 hover:text-gray-700 font-medium" onclick="closePedidoModal()">
+          Cancelar
+        </button>
+      </div>
+    </form>
   </div>
+</div>
+
+<!-- Animación opcional -->
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
+  }
+</style>
+
 
   <script>
     function openModal() {
