@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
 
             // 🔗 Relaciones
-            $table->unsignedBigInteger('id_company'); // Empresa que recibe el pedido
             $table->unsignedBigInteger('id_repartidor')->nullable(); // Repartidor asignado
             $table->unsignedBigInteger('cliente_id')->nullable(); // Cliente que hace el pedido (opcional)
 
@@ -74,9 +73,8 @@ return new class extends Migration
             $table->timestamps();
 
             // 🔒 Foreign keys (opcional si tienes modelos)
-             $table->foreign('id_company')->references('id')->on('companies')->onDelete('cascade');;
-             $table->foreign('id_repartidor')->references('id')->on('users')->onDelete('cascade');;
-             $table->foreign('cliente_id')->references('id')->on('users')->onDelete('cascade');;
+             $table->foreign('id_repartidor')->references('id')->on('users')->onDelete('cascade')->nullable();
+             $table->foreign('cliente_id')->references('id')->on('users')->onDelete('cascade')->nullable();
 
             // Relación con la tabla user_cliente
         });
