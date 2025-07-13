@@ -71,19 +71,10 @@ class PedidoController extends Controller
         if ($pedido->save()) {
    
 
-<<<<<<< Updated upstream
-            // return response()->json([
-            //     'message' => 'Pedido creado exitosamente',
-            //     'pedido_id' => $pedido->id,
-            //     // 'dealer_id' => $dealer->id
-            // ], 201);
-            return redirect()->back()->with('success', 'Pedido creado correctamente');
-=======
             return response()->json([
                 'message' => 'Pedido creado exitosamente',
                 'pedido_id' => $pedido->id,
             ], 201);
->>>>>>> Stashed changes
         }
 
         return response()->json(['error' => 'No se pudo crear el pedido'], 500);
