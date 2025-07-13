@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client\ClientModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Company\Company;
+use App\Models\Cliente\Cliente;
 use App\Models\Roles\Rol;
 use App\Models\Invitation\Invitation;
 
@@ -59,9 +61,9 @@ class AdminController extends Controller
 
 public function verUsuarios()
 {
-    $usuarios = User::where('rol_id', '!=', '1')->get() ?? collect();
+    $clientes = User::where('rol_id', '!=', '1')->get() ?? collect();
 
-    return view('admin.users', compact('usuarios'));
+    return view('admin.users', compact('clientes'));
 }
 
 public function verEmpresas()
@@ -70,5 +72,13 @@ public function verEmpresas()
 
     return view('admin.empresas', compact('empresas'));
 }
+public function toggleStatus(ClientModel $cliente)
+{
+    $cliente->status = !$cliente->status;
+    $cliente->save();
+
+    return redirect()->back()->with('success', 'Estado actualizado');
+}
+
 
 }

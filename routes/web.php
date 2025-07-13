@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::post('/clientes/{cliente}/toggle-status', [AdminController::class, 'toggleStatus'])->name('clientes.toggleStatus');
 
 Route::get('/login', [ManagerController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ManagerController::class, 'loginWithMail'])->name('login.attempt');
