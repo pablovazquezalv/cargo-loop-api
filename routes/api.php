@@ -35,7 +35,8 @@ Route::prefix('client')->group(function () {
     Route::get('/{id}', [ClientController::class, 'show']); // Mostrar cliente
     Route::put('/{id}', [ClientController::class, 'update']); // Actualizar cliente
     Route::delete('/{id}', [ClientController::class, 'destroy']); // Eliminar cliente
-    
+    Route::post('/pedidos', [ClientController::class, 'pedidoPorcliente']); // Listar pedidos por cliente
+    Route::post('/pedidoActual', [ClientController::class, 'pedidoActual']); // Listar pedidos por cliente
 
 
 });

@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Mail;
 
 use App\Models\Client\ClientModel as Client;
 
-
+use App\Models\pedido\pedidos;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class ClientController extends Controller
 {
@@ -169,4 +171,57 @@ class ClientController extends Controller
         return back()->with('success', 'Mensaje enviado con éxito.');
          
     }
+
+ public function pedidoPorcliente(Request $request)
+    {
+      try {
+    $validated = $request->validate([
+        'cliente_id' => 'required',
+    ]);
+    
+    $pedidos = pedidos::where('cliente_id', $request->cliente_id)->get();
+    if ($pedidos->isEmpty()) {
+        return response()->json(['message' => 'No se encontraron pedidos para este cliente.'], 404);
+    }
+    return response()->json(['message' => 'Pedidos encontrados.', 'data' => $pedidos], 200);
+    
+} catch (ValidationException $e) {
+    return response()->json([
+        'message' => 'Errores de validación.',
+        'errors' => $e->errors()
+    ], 422);
+}
+        
+    } 
+
+  public function pedidoActual(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'cliente_id' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Errores de validación.',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $clienteId = $request->cliente_id;
+
+    $pedidoActual = DB::table('pedidos')
+        ->where('cliente_id', $clienteId)
+        ->where('estado_pedido', '!=', 'Finalizado')
+        ->orderByDesc('id') // opcional: si deseas el más reciente
+        ->first();
+
+    if ($pedidoActual) {
+        return response()->json(['pedido' => $pedidoActual], 200);
+    }
+
+    return response()->json([
+        'message' => 'No se encontró un pedido en curso para este cliente.'
+    ], 404);
+}
+
 }

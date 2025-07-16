@@ -91,33 +91,34 @@ class DealerController extends Controller
         $user->nss = $request->nss;
     
         // Guardar archivos en public y almacenar la ruta
-        if ($request->hasFile('picture_license')) {
+       if ($request->hasFile('picture_license')) {
     $file = $request->file('picture_license');
     $filename = 'user_' . $user->id . '_licencia.' . $file->getClientOriginalExtension();
-    $path = $file->storeAs('licencias', $filename, 'public');
-    $user->picture_license = asset('storage/' . $path);
+    $file->move(public_path('licencias'), $filename);
+    $user->picture_license = 'licencias/' . $filename; // Ruta relativa
 }
 
 if ($request->hasFile('photo_identification')) {
     $file = $request->file('photo_identification');
     $filename = 'user_' . $user->id . '_identificacion.' . $file->getClientOriginalExtension();
-    $path = $file->storeAs('identificaciones', $filename, 'public');
-    $user->photo_identification = asset('storage/' . $path);
+    $file->move(public_path('identificaciones'), $filename);
+    $user->photo_identification = 'identificaciones/' . $filename;
 }
 
 if ($request->hasFile('letter_of_no_criminal_record')) {
     $file = $request->file('letter_of_no_criminal_record');
     $filename = 'user_' . $user->id . '_no_criminal.' . $file->getClientOriginalExtension();
-    $path = $file->storeAs('no_criminal', $filename, 'public');
-    $user->letter_of_no_criminal_record = asset('storage/' . $path);
+    $file->move(public_path('no_criminal'), $filename);
+    $user->letter_of_no_criminal_record = 'no_criminal/' . $filename;
 }
 
 if ($request->hasFile('proof_of_residence')) {
     $file = $request->file('proof_of_residence');
     $filename = 'user_' . $user->id . '_comprobante.' . $file->getClientOriginalExtension();
-    $path = $file->storeAs('proof_of_residence', $filename, 'public');
-    $user->proof_of_residence = asset('storage/' . $path);
+    $file->move(public_path('proof_of_residence'), $filename);
+    $user->proof_of_residence = 'proof_of_residence/' . $filename;
 }
+
 
     
         $user->rfc = $request->rfc;
@@ -353,17 +354,21 @@ if ($request->hasFile('proof_of_residence')) {
             ], 422);
 
         }
-        $pedido = DB::table('pedidos')
-            ->where('id', $request->idPedido)
-            ->first();
-        if (!$pedido) {
-            return response()->json(['message' => 'Pedido no encontrado'], 404);
-        }
-        $pedido->ubicacion_transportista_lat = $request->latitude;
-        $pedido->ubicacion_transportista_long = $request->longitude;
-        $pedido->save();
-        return response()->json(['message' => 'Ubicación actualizada correctamente', 'data' => $pedido], 200);
-        
+       $pedido = DB::table('pedidos')->where('id', $request->idPedido)->first();
+
+if (!$pedido) {
+    return response()->json(['message' => 'Pedido no encontrado'], 404);
+}
+
+DB::table('pedidos')
+    ->where('id', $request->idPedido)
+    ->update([
+        'ubicacion_transportista_lat' => $request->latitude,
+        'ubicacion_transportista_long' => $request->longitude
+    ]);
+
+return response()->json(['message' => 'Ubicación actualizada correctamente'], 200);
+
     }
 
 
