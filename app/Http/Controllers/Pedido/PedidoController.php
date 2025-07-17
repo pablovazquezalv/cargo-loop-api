@@ -17,13 +17,8 @@ class PedidoController extends Controller
         // ✅ Validación
         $validator = Validator::make($request->all(), [
              'fecha_carga' => 'required|date',
-            // 'lugar_origen' => 'required|string',
-            // 'lugar_destino' => 'required|string',
-            //  'tipo_unidad' => 'required|string',
-            
              'descripcion_carga' => 'nullable|string',
              'especificacion_carga' => 'nullable|string',
-            
              'valor_carga' => 'required|numeric',
              'aplica_seguro' => 'boolean',
              'observaciones' => 'nullable|string',
@@ -31,7 +26,6 @@ class PedidoController extends Controller
              'seguro_carga' => 'nullable|string',
              'cartaporte' => 'nullable|string',
              'estado_pedido' => 'nullable|string',
-             'id_company' => 'required|integer',
              'cliente_id' =>'required|integer',
              'ubicacion_recoger_lat' => 'required|numeric',
              'ubicacion_recoger_long' => 'required|numeric',
@@ -50,21 +44,10 @@ class PedidoController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        // 🔍 Buscar repartidor disponible (dealer)
-        // $dealer = Dealer::where('company_id', $request->input('company_id', 1)) // Puedes cambiar esto
-        //                 ->where('estado', 'disponible')
-        //                 ->first();
-
-        // if (!$dealer) {
-        //     return response()->json(['error' => 'No hay repartidores disponibles en este momento'], 409);
-        // }
-
-        // 📦 Crear el pedido
         $pedido = new pedidos();
         $pedido->nombre_contacto = $request->nombre_contacto;
         $pedido->tipo_de_pago = $request->tipo_de_pago;
          $pedido->fecha_carga = $request->fecha_carga;
-        //  $pedido->tipo_unidad = $request->tipo_unidad;
          $pedido->cantidad = $request->cantidad;
          $pedido->tipo_de_material = $request->tipo_de_material;
          $pedido->descripcion_carga = $request->descripcion_carga;
@@ -75,7 +58,6 @@ class PedidoController extends Controller
          $pedido->seguro_carga = $request->seguro_carga;
          $pedido->cartaporte = $request->cartaporte;
          $pedido->estado_pedido = 'disponible';
-         $pedido->id_company = $request->id_company;
          $pedido->cliente_id = $request->cliente_id;
          $pedido->tipo_de_vehiculo = $request->tipo_De_vehiculo;
          $pedido->ubicacion_recoger_lat = $request->ubicacion_recoger_lat;
@@ -85,18 +67,14 @@ class PedidoController extends Controller
          $pedido->ubicacion_entregar_long = $request->ubicacion_entregar_long;
          $pedido->ubicacion_entregar_direccion = $request->ubicacion_entregar_direccion;
 
-    
 
         if ($pedido->save()) {
-            // $dealer->estado = 'ocupado';
-            // $dealer->save();
+   
 
-            // return response()->json([
-            //     'message' => 'Pedido creado exitosamente',
-            //     'pedido_id' => $pedido->id,
-            //     // 'dealer_id' => $dealer->id
-            // ], 201);
-            return redirect()->back()->with('success', 'Pedido creado correctamente');
+            return response()->json([
+                'message' => 'Pedido creado exitosamente',
+                'pedido_id' => $pedido->id,
+            ], 201);
         }
 
         return response()->json(['error' => 'No se pudo crear el pedido'], 500);

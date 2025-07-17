@@ -18,7 +18,7 @@
       <div class="bg-white shadow-md rounded-lg p-6 text-center">
         <div class="text-4xl text-blue-700">{{ count($nuevosUsuarios ?? []) }}</div>
         <div class="text-gray-600">Usuarios Nuevos</div>
-           <a href="{{ route('repartidores') }}"
+           <a href="{{ route('usuarios') }}"
      class="mt-4 inline-block text-sm text-blue-700 hover:underline">
     Ver detalles
   </a>

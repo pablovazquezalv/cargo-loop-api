@@ -8,7 +8,7 @@
   <meta property="og:url" content="https://www.mx.cargo-loop.com" />
   <meta property="og:type" content="website" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Carga Loop</title>
+  <title>cargo Loop</title>
   {{-- ✅ Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -33,7 +33,7 @@
 <x-navbar />
 
 <div class="flex flex-col items-center justify-center min-h-screen bg-white px-4">
-    <img src="{{ asset('Carga-loop-icon.png') }}" alt="Logo" class="h-24 mb-6" />
+    <img src="{{ asset('cargo-loop-icon.png') }}" alt="Logo" class="h-24 mb-6" />
     <h1 class="text-3xl font-bold text-blue-800 mb-10">Crear Empresa</h1>
 
     @if(session('error'))

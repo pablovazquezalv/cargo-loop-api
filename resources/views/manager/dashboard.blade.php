@@ -30,7 +30,7 @@
       <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Hola Manager</h1>
       <div class="flex gap-2">
         <button class="bg-blue-800 text-white px-4 py-2 rounded" onclick="openModal()">Invitar a transportista</button>
-        <button class="bg-green-600 text-white px-4 py-2 rounded" onclick="openPedidoModal()">Crear Pedido</button>
+        {{-- <button class="bg-green-600 text-white px-4 py-2 rounded" onclick="openPedidoModal()">Crear Pedido</button> --}}
       </div>
     </div>
 

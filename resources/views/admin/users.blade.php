@@ -33,6 +33,7 @@
             <th class="py-3 px-4 text-left">País</th>
             <th class="py-3 px-4 text-left">C.P.</th>
             <th class="py-3 px-4 text-left">Status</th>
+            <th class="py-3 px-4 text-left">Acciones</th>
             <th class="py-3 px-4 text-left">Independiente</th>
             <th class="py-3 px-4 text-left">InCompany</th>
             <th class="py-3 px-4 text-left">Foto</th>
@@ -56,12 +57,21 @@
                   <span class="text-red-600 font-semibold">Inactivo</span>
                 @endif
               </td>
+               <td class="py-3 px-4">
+        <form action="{{ route('clientes.toggleStatus', $cliente->id) }}" method="POST">
+          @csrf
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded">
+            {{ $cliente->status ? 'Desactivar' : 'Activar' }}
+          </button>
+        </form>
+      </td>
               <td class="py-3 px-4">
                 {{ $cliente->independiente ? 'Sí' : 'No' }}
               </td>
               <td class="py-3 px-4">
                 {{ $cliente->incompany ? 'Sí' : 'No' }}
               </td>
+              
               <td class="py-3 px-4">
                 @if($cliente->profile_picture)
                   <img src="{{ asset('storage/' . $cliente->profile_picture) }}" class="w-16 h-16 rounded shadow object-cover" alt="Foto">

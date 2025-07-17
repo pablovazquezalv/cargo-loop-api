@@ -41,13 +41,13 @@ class ManagerController extends Controller
 
 $dashboardData = [
     'transportistas' => $user->company ? $user->company->dealers()->count() : 0,
-    'cargas' => pedidos::where('id_company', $companyId)->count(),
-    'entregasCompletadas' => pedidos::where('id_company', $companyId)
-        ->where('estado_pedido', 'entregado')
-        ->count(),
-    'entregasEnProceso' => pedidos::where('id_company', $companyId)
-        ->where('estado_pedido', 'en_proceso')
-        ->count(),
+   # 'cargas' => pedidos::where('id_company', $companyId)->count(),
+   # 'entregasCompletadas' => pedidos::where('id_company', $companyId)
+   #     ->where('estado_pedido', 'entregado')
+    #    ->count(),
+    // 'entregasEnProceso' => pedidos::where('id_company', $companyId)
+    //     ->where('estado_pedido', 'en_proceso')
+    //     ->count(),
     'nuevosUsuarios' => \App\Models\User::where('company_id', $companyId)
         ->whereDate('created_at', '>=', now()->subDays(7)) // Ejemplo últimos 7 días
         ->count(),
